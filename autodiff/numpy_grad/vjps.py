@@ -1,4 +1,6 @@
-import autodiff.numpy_grad.wrapper as wnp
+#pylint: disable=no-member
+
+from . import wrapper as wnp
 from autodiff.core import register_vjp
 
 # print(__name__)

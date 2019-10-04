@@ -1,7 +1,7 @@
 import networkx as nx
 
 def primitive(func):
-    def f_wrapped(*args):
-        print(1)
-        return func(*args)
+    def f_wrapped(*args, **kwargs):
+        print(func.__name__)
+        return func(*args, **kwargs)
     return f_wrapped
