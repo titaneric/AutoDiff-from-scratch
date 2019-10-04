@@ -9,7 +9,7 @@ import autodiff.numpy_grad.wrapper as np
 def tanh(x):
     return (1.0 - np.exp(-x))  / (1.0 + np.exp(-x)) 
 
-def tanh2(x, **kwargs):
+def tanh2(x):
     return np.divide(np.subtract(1, np.exp(np.negative(x))), np.add(1, np.exp(np.negative(x))))
 
 if __name__ == "__main__":

@@ -1,10 +1,12 @@
 from collections import defaultdict
+from queue import Queue
 import inspect
 
 import numpy as np
 import networkx as nx
 
 primitive_vhp = defaultdict(dict)
+graph_queue = Queue()
 
 def build_graph(func, x):
     print(x)
@@ -13,9 +15,8 @@ def build_graph(func, x):
 def forward_prop(func, *x):
     def forward_wrap(*args, **kwargs):
         graph = nx.DiGraph()
-        kwargs['graph'] = graph
         print(id(graph))
-        print("forward", kwargs, args, x)
+        graph_queue.put(graph)
         return func(*x, *args, **kwargs)
     return forward_wrap
 
