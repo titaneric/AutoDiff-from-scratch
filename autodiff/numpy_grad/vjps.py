@@ -48,7 +48,7 @@ register_vjp(wnp.subtract, [
 
 register_vjp(wnp.multiply, [
     lambda upstream, result, x, y: upstream * y,  # w.r.t. x
-    lambda upstream, result, x, y: upstream * -x,  # w.r.t. y
+    lambda upstream, result, x, y: upstream * x,  # w.r.t. y
 ])
 
 register_vjp(wnp.true_divide, [
@@ -57,11 +57,11 @@ register_vjp(wnp.true_divide, [
 ])
 
 register_vjp(wnp.maximum, [
-    lambda upstream, result, x, y:max(upstream, 0),  # w.r.t. x
-    lambda upstream, result, x, y:max(0, upstream),  # w.r.t. y
+    lambda upstream, result, x, y:upstream if x > y else 0,  # w.r.t. x
+    lambda upstream, result, x, y:upstream if y > x else 0,  # w.r.t. y
 ])
 
 register_vjp(wnp.minimum, [
-    lambda upstream, result, x, y: min(upstream, 0),  # w.r.t. x
-    lambda upstream, result, x, y: min(0, upstream),  # w.r.t. y
+    lambda upstream, result, x, y: upstream if x < y else 0,  # w.r.t. x
+    lambda upstream, result, x, y: upstream if x > y else 0,  # w.r.t. y
 ])

@@ -21,16 +21,18 @@ def forward_prop(func, **assignd):
 
 def backward_prop(graph: nx.DiGraph):
     graph.nodes[len(graph.nodes())]['node'].gradient = 1
+
     for node in reversed(list(nx.topological_sort(graph))):
         child_node: OperationNode = graph.nodes[node]['node']
         if isinstance(child_node, OperationNode):
             func, args, kwargs, result, arg_num = child_node.recipe
             upstream = child_node.gradient
-            # print(func.__name__, upstream)
+            print(node, func.__name__, upstream)
             for i, parent in zip(range(arg_num), graph.predecessors(node)):
                 vhp = primitive_vhp[func.__name__][i]
                 downstream = vhp(upstream, result, *args)
                 graph.nodes[parent]['node'].gradient += downstream
+                print(parent,":", downstream)
 
 
 def register_vjp(func, vhp_list):
