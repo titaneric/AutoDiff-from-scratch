@@ -25,10 +25,6 @@ if __name__ == "__main__":
     nx.draw(graph)
     plt.show()
     plt.savefig('graph.png', format='PNG')
-    # print(graph.nodes[1])
-    # grad(tanh2)
-    print(list(nx.topological_sort(graph)))
-    print(graph.edges())
-    
-    # print(wnp.add(1,2))
+    # print(list(nx.topological_sort(graph)))
+    # print(graph.edges())
     backward_prop(graph)

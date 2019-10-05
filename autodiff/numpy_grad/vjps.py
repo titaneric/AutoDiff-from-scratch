@@ -51,7 +51,7 @@ register_vjp(wnp.multiply, [
     lambda upstream, result, x, y: upstream * -x,  # w.r.t. y
 ])
 
-register_vjp(wnp.divide, [
+register_vjp(wnp.true_divide, [
     lambda upstream, result, x, y: upstream / y,  # w.r.t. x
     lambda upstream, result, x, y: upstream * (-x / y ** 2),  # w.r.t. y
 ])

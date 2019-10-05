@@ -1,3 +1,5 @@
+from functools import wraps
+
 import networkx as nx
 
 from .node import ConstantNode, OperationNode, VariableNode
@@ -12,7 +14,7 @@ def constant(const):
             graph.add_node(node_index, node=node)
 
             info.stack.append(node_index)
-        print('const', node_index, const, args)
+        # print('const', node_index, const, args)
         return const(*args, **kwargs)
     return const_wrapped
 
@@ -28,11 +30,12 @@ def variable(var):
             else:
                 node_index = info.vars[var_id]
             info.stack.append(node_index)
-        print('var', node_index, var, args)
+        # print('var', node_index, var, args)
         return var(*args, **kwargs)
     return var_wrapped
 
 def primitive(func):
+    @wraps(func)
     def func_wrapped(*args, **kwargs):
         with GraphManager() as (graph, info):
             result = func(*args, **kwargs)
@@ -45,7 +48,7 @@ def primitive(func):
                 graph.add_edge(parent, node_index)
                 info.stack.pop()
 
-            print('fun', node_index, func.__name__, args, kwargs, )
+            # print('fun', node_index, func.__name__, args, kwargs, )
 
             info.stack.append(node_index)
         return result
