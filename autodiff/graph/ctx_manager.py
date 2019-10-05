@@ -9,9 +9,9 @@ class GraphManager:
 
     def __enter__(self):
         self.graph: nx.DiGraph = graph_stack.pop()
-        graph_info = graph_info_dict.get(self.graph, GraphInfo([], {}))
-        return self.graph, graph_info.stack, graph_info.vars
+        self.graph_info = graph_info_dict.get(self.graph, GraphInfo([], dict()))
+        return self.graph, self.graph_info
 
     def __exit__(self, *args):
-        graph_stack.append(self.graph)        
-        pass
+        graph_stack.append(self.graph)
+        graph_info_dict[self.graph] = self.graph_info

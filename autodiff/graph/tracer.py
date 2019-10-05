@@ -6,31 +6,35 @@ from .ctx_manager import GraphManager
 
 def constant(const):
     def const_wrapped(*args, **kwargs):
-        with GraphManager() as (graph, stack, _):
+        with GraphManager() as (graph, info):
             node_index = len(graph.nodes())+1
             node = ConstantNode(const)
             graph.add_node(node_index)
 
-            stack.append(node_index)
+            info.stack.append(node_index)
         print('const', node_index, const, args)
         return const(*args, **kwargs)
     return const_wrapped
 
 def variable(var):
     def var_wrapped(*args, **kwargs):
-        with GraphManager() as (graph, stack, vars):
-            node_index = len(graph.nodes())+1
-            node = VariableNode(var)
-            graph.add_node(node_index)
-
-            stack.append(node_index)
-        print('var', node_index, var, args, id(var))
+        with GraphManager() as (graph, info):
+            var_id = id(var)
+            if var_id not in info.vars:
+                node_index = len(graph.nodes())+1
+                node = VariableNode(var)
+                graph.add_node(node_index)
+                info.vars[var_id] = node_index
+            else:
+                node_index = info.vars[var_id]
+            info.stack.append(node_index)
+        print('var', node_index, var, args)
         return var(*args, **kwargs)
     return var_wrapped
 
 def primitive(func):
     def func_wrapped(*args, **kwargs):
-        with GraphManager() as (graph, stack, _):
+        with GraphManager() as (graph, info):
             result = func(*args, **kwargs)
             node_index = len(graph.nodes())+1
             node_info = {
@@ -41,13 +45,13 @@ def primitive(func):
             }
             graph.add_node(node_index, **node_info)
 
-            parents = stack[-len(args):]
+            parents = info.stack[-len(args):]
             for parent in parents:
                 graph.add_edge(parent, node_index)
-                stack.pop()
+                info.stack.pop()
 
             print('fun', node_index, func.__name__, args, kwargs, )
 
-            stack.append(node_index)
+            info.stack.append(node_index)
         return result
     return func_wrapped

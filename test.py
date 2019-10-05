@@ -1,4 +1,5 @@
 #pylint: disable=no-member
+import warnings
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -17,7 +18,6 @@ def tanh2(x):
     )
 
 if __name__ == "__main__":
-    # print(tanh(0))
     print(forward_prop(tanh2, 0)())
     graph: nx.DiGraph = graph_stack.pop()
     nx.draw(graph)
@@ -25,5 +25,6 @@ if __name__ == "__main__":
     plt.savefig('graph.png', format='PNG')
     # print(graph.nodes[1])
     # grad(tanh2)
-    # print(graph.edges())
+    print(list(nx.topological_sort(graph)))
+    print(graph.edges())
     # print(wnp.add(1,2))
