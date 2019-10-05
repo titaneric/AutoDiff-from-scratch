@@ -6,33 +6,33 @@ from .node import ConstantNode, OperationNode, VariableNode
 from .ctx_manager import GraphManager
 
 
-def constant(const):
+def constant(array):
     def const_wrapped(*args, **kwargs):
         with GraphManager() as (graph, info):
             node_index = len(graph.nodes())+1
-            node = ConstantNode(const)
+            node = ConstantNode(args)
             graph.add_node(node_index, node=node)
 
             info.stack.append(node_index)
         # print('const', node_index, const, args)
-        return const(*args, **kwargs)
+        return array(*args, **kwargs)
     return const_wrapped
 
-def variable(var):
-    def var_wrapped(*args, **kwargs):
+def variable(array):
+    def var_wrapped(**kwargs):
         with GraphManager() as (graph, info):
-            var_id = id(list(args))
-            print(var_id, args, kwargs)
+            var_id = tuple(kwargs.keys())
+            # print(var_id, args, kwargs)
             if var_id not in info.vars:
                 node_index = len(graph.nodes())+1
-                node = VariableNode(var)
+                node = VariableNode(kwargs)
                 graph.add_node(node_index, node=node)
                 info.vars[var_id] = node_index
             else:
                 node_index = info.vars[var_id]
             info.stack.append(node_index)
-        print('var', node_index, args)
-        return var(*args, **kwargs)
+        print('var', node_index, kwargs)
+        return array(*kwargs.values())
     return var_wrapped
 
 def primitive(func):

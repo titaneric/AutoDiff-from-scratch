@@ -21,8 +21,8 @@ def tanh2(x):
 
 def test(x, y, z, w):
     return np.multiply(
-                np.add(np.multiply(np.var(x), np.var(y)),
-                    np.maximum(np.var(z), np.var(w))), 
+                np.add(np.multiply(np.var(x=x), np.var(y=y)),
+                    np.maximum(np.var(z=z), np.var(w=w))), 
                 np.const(2)
             )
 if __name__ == "__main__":

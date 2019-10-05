@@ -10,13 +10,12 @@ graph_stack = []
 GraphInfo = namedtuple('GraphInfo', 'stack, vars')
 graph_info_dict = defaultdict(GraphInfo)
 
-def forward_prop(func, *var, **assignd):
+def forward_prop(func, **assignd):
     def forward_wrap(*args, **kwargs):
         graph = nx.DiGraph()
-        print(id(var), var, assignd)
         graph_stack.append(graph)
         kwargs.update(assignd)
-        return func(*var, *args, **kwargs)
+        return func(*args, **kwargs)
 
     return forward_wrap
 
