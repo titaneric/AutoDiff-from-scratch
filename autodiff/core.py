@@ -1,23 +1,19 @@
 from collections import defaultdict
-from queue import Queue
-import inspect
 
-import numpy as np
 import networkx as nx
 
 primitive_vhp = defaultdict(dict)
-graph_queue = Queue()
 
-def build_graph(func, x):
-    print(x)
-    return
+op_stack = []
+graph_stack = defaultdict(list)
 
 def forward_prop(func, *x):
     def forward_wrap(*args, **kwargs):
         graph = nx.DiGraph()
-        print(id(graph))
-        graph_queue.put(graph)
+        print(id(graph), x)
+        op_stack.append(graph)
         return func(*x, *args, **kwargs)
+
     return forward_wrap
 
 def backward_prop(upstream, graph: nx.DiGraph):
