@@ -3,11 +3,13 @@ import warnings
 
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.cbook
 
 import autodiff
-from autodiff.core import forward_prop, graph_stack
+from autodiff.core import forward_prop, backward_prop, graph_stack
 import autodiff.numpy_grad.wrapper as np
 
+warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 def tanh(x):
     return (1.0 - np.exp(-x))  / (1.0 + np.exp(-x)) 
 
@@ -27,4 +29,6 @@ if __name__ == "__main__":
     # grad(tanh2)
     print(list(nx.topological_sort(graph)))
     print(graph.edges())
+    
     # print(wnp.add(1,2))
+    backward_prop(graph)

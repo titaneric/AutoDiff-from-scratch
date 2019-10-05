@@ -9,7 +9,7 @@ def constant(const):
         with GraphManager() as (graph, info):
             node_index = len(graph.nodes())+1
             node = ConstantNode(const)
-            graph.add_node(node_index)
+            graph.add_node(node_index, node=node)
 
             info.stack.append(node_index)
         print('const', node_index, const, args)
@@ -23,7 +23,7 @@ def variable(var):
             if var_id not in info.vars:
                 node_index = len(graph.nodes())+1
                 node = VariableNode(var)
-                graph.add_node(node_index)
+                graph.add_node(node_index, node=node)
                 info.vars[var_id] = node_index
             else:
                 node_index = info.vars[var_id]
@@ -37,13 +37,8 @@ def primitive(func):
         with GraphManager() as (graph, info):
             result = func(*args, **kwargs)
             node_index = len(graph.nodes())+1
-            node_info = {
-                'func': func,
-                'args': args,
-                'kwargs': kwargs,
-                'result': result
-            }
-            graph.add_node(node_index, **node_info)
+            node = OperationNode(func, args, kwargs, result)
+            graph.add_node(node_index, node=node)
 
             parents = info.stack[-len(args):]
             for parent in parents:

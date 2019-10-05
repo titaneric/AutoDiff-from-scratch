@@ -17,10 +17,11 @@ def forward_prop(func, *x):
 
     return forward_wrap
 
-def backward_prop(upstream, graph: nx.DiGraph):
+def backward_prop(graph: nx.DiGraph):
+    upstream = 1
     for node in reversed(list(nx.topological_sort(graph))):
-        for parent in graph.predecessors:
-            pass
+        for parent in graph.predecessors(node):
+            print(graph.nodes[parent]['node'])
 
 def register_vjp(func, vhp_list):
     for i, downstream in enumerate(vhp_list):
