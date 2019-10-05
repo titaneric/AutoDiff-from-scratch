@@ -1,16 +1,17 @@
 import networkx as nx
 
-from autodiff.core import op_stack, graph_stack
+from autodiff.core import graph_stack, graph_info_dict, GraphInfo
 
-class Graph:
+
+class GraphManager:
     def __init__(self):
         pass
 
     def __enter__(self):
-        self.graph: nx.DiGraph = op_stack.pop()
-        self.stack = graph_stack[self.graph]
-        return self.graph, self.stack
+        self.graph: nx.DiGraph = graph_stack.pop()
+        graph_info = graph_info_dict.get(self.graph, GraphInfo([], {}))
+        return self.graph, graph_info.stack, graph_info.vars
 
     def __exit__(self, *args):
-        op_stack.append(self.graph)        
+        graph_stack.append(self.graph)        
         pass

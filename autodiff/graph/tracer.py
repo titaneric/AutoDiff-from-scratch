@@ -1,12 +1,12 @@
 import networkx as nx
 
 from .node import ConstantNode, OperationNode, VariableNode
-from .ctx_manager import Graph
+from .ctx_manager import GraphManager
 
 
 def constant(const):
     def const_wrapped(*args, **kwargs):
-        with Graph() as (graph, stack):
+        with GraphManager() as (graph, stack, _):
             node_index = len(graph.nodes())+1
             node = ConstantNode(const)
             graph.add_node(node_index)
@@ -18,19 +18,19 @@ def constant(const):
 
 def variable(var):
     def var_wrapped(*args, **kwargs):
-        with Graph() as (graph, stack):
+        with GraphManager() as (graph, stack, vars):
             node_index = len(graph.nodes())+1
             node = VariableNode(var)
             graph.add_node(node_index)
 
             stack.append(node_index)
-        print('var', node_index, var, args)
+        print('var', node_index, var, args, id(var))
         return var(*args, **kwargs)
     return var_wrapped
 
 def primitive(func):
     def func_wrapped(*args, **kwargs):
-        with Graph() as (graph, stack):
+        with GraphManager() as (graph, stack, _):
             result = func(*args, **kwargs)
             node_index = len(graph.nodes())+1
             node_info = {

@@ -1,17 +1,18 @@
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 import networkx as nx
 
 primitive_vhp = defaultdict(dict)
 
-op_stack = []
-graph_stack = defaultdict(list)
+graph_stack = []
+GraphInfo = namedtuple('GraphInfo', 'stack, vars')
+graph_info_dict = defaultdict(GraphInfo)
 
 def forward_prop(func, *x):
     def forward_wrap(*args, **kwargs):
         graph = nx.DiGraph()
         print(id(graph), x)
-        op_stack.append(graph)
+        graph_stack.append(graph)
         return func(*x, *args, **kwargs)
 
     return forward_wrap
