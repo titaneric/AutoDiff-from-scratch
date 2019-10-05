@@ -19,8 +19,14 @@ def tanh2(x):
         np.add(np.const(1), np.exp(np.negative(np.var(x))))
     )
 
+def test(x, y, z, w):
+    return np.multiply(
+                np.add(np.multiply(np.var(x), np.var(y)),
+                    np.maximum(np.var(z), np.var(w))), 
+                np.const(2)
+            )
 if __name__ == "__main__":
-    print(forward_prop(tanh2, 0)())
+    print(forward_prop(test, z=2, y=-4, x=3, w=-1)())
     graph: nx.DiGraph = graph_stack.pop()
     nx.draw(graph)
     plt.show()
@@ -28,3 +34,5 @@ if __name__ == "__main__":
     # print(list(nx.topological_sort(graph)))
     # print(graph.edges())
     backward_prop(graph)
+    for node in nx.topological_sort(graph):
+        print(node, graph.nodes[node]['node'].gradient)

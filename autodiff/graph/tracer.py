@@ -21,7 +21,8 @@ def constant(const):
 def variable(var):
     def var_wrapped(*args, **kwargs):
         with GraphManager() as (graph, info):
-            var_id = id(var)
+            var_id = id(list(args))
+            print(var_id, args, kwargs)
             if var_id not in info.vars:
                 node_index = len(graph.nodes())+1
                 node = VariableNode(var)
@@ -30,7 +31,7 @@ def variable(var):
             else:
                 node_index = info.vars[var_id]
             info.stack.append(node_index)
-        # print('var', node_index, var, args)
+        print('var', node_index, args)
         return var(*args, **kwargs)
     return var_wrapped
 

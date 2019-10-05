@@ -55,3 +55,13 @@ register_vjp(wnp.true_divide, [
     lambda upstream, result, x, y: upstream / y,  # w.r.t. x
     lambda upstream, result, x, y: upstream * (-x / y ** 2),  # w.r.t. y
 ])
+
+register_vjp(wnp.maximum, [
+    lambda upstream, result, x, y:max(upstream, 0),  # w.r.t. x
+    lambda upstream, result, x, y:max(0, upstream),  # w.r.t. y
+])
+
+register_vjp(wnp.minimum, [
+    lambda upstream, result, x, y: min(upstream, 0),  # w.r.t. x
+    lambda upstream, result, x, y: min(0, upstream),  # w.r.t. y
+])

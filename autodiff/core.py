@@ -10,12 +10,13 @@ graph_stack = []
 GraphInfo = namedtuple('GraphInfo', 'stack, vars')
 graph_info_dict = defaultdict(GraphInfo)
 
-def forward_prop(func, *x):
+def forward_prop(func, *var, **assignd):
     def forward_wrap(*args, **kwargs):
         graph = nx.DiGraph()
-        print(id(graph), x)
+        print(id(var), var, assignd)
         graph_stack.append(graph)
-        return func(*x, *args, **kwargs)
+        kwargs.update(assignd)
+        return func(*var, *args, **kwargs)
 
     return forward_wrap
 
@@ -26,6 +27,7 @@ def backward_prop(graph: nx.DiGraph):
         if isinstance(child_node, OperationNode):
             func, args, kwargs, result, arg_num = child_node.recipe
             upstream = child_node.gradient
+            # print(func.__name__, upstream)
             for i, parent in zip(range(arg_num), graph.predecessors(node)):
                 vhp = primitive_vhp[func.__name__][i]
                 downstream = vhp(upstream, result, *args)
