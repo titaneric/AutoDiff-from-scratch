@@ -1,4 +1,5 @@
 #pylint: disable=no-member
+from math import log
 
 from . import wrapper as wnp
 from autodiff.core import register_vjp
@@ -57,11 +58,20 @@ register_vjp(wnp.true_divide, [
 ])
 
 register_vjp(wnp.maximum, [
-    lambda upstream, result, x, y:upstream if x > y else 0,  # w.r.t. x
-    lambda upstream, result, x, y:upstream if y > x else 0,  # w.r.t. y
+    lambda upstream, result, x, y:upstream * balanced_eq(x, result, y),  # w.r.t. x
+    lambda upstream, result, x, y:upstream * balanced_eq(y, result, x),  # w.r.t. y
 ])
 
 register_vjp(wnp.minimum, [
-    lambda upstream, result, x, y: upstream if x < y else 0,  # w.r.t. x
-    lambda upstream, result, x, y: upstream if x > y else 0,  # w.r.t. y
+    lambda upstream, result, x, y: upstream * balanced_eq(x, result, y),  # w.r.t. x
+    lambda upstream, result, x, y: upstream * balanced_eq(y, result, x),  # w.r.t. y
 ])
+
+register_vjp(wnp.power, [
+    lambda upstream, result, x, y: upstream * (y * x ** (y - 1)),  # w.r.t. x
+    lambda upstream, result, x, y: upstream * (result * log(x)),  # w.r.t. y
+])
+
+# shamelessly taken from autograd, brilliant!
+def balanced_eq(x, z, y):
+    return (x == z) / (1.0 + (x == y)) 
