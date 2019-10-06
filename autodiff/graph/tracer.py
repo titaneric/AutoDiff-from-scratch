@@ -21,8 +21,7 @@ def constant(array):
 def variable(array):
     def var_wrapped(**kwargs):
         with GraphManager() as (graph, info):
-            var_id = tuple(kwargs.keys())
-            # print(var_id, args, kwargs)
+            var_id = "".join(kwargs.keys())
             if var_id not in info.vars:
                 node_index = len(graph.nodes())+1
                 node = VariableNode(var_id)

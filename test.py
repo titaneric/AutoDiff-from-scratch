@@ -30,6 +30,21 @@ def test2(x, y, z):
         np.maximum(np.var(y=y),np.var(z=z))
     )
 
+
+def test3(x):
+    return np.power(np.var(x=x), np.const(3))
+
 if __name__ == "__main__":
     # print(grad(test2)(x=1, y=2, z=0))
-    print(grad(test)(z=2, y=-4, x=3, w=-1))
+    # print(grad(test)(z=2, y=-4, x=3, w=-1))
+    # print(grad(test3, 'x')(x=-1))
+    x_list = np.linspace(-7, 7, 200)
+    y_list = list(map(lambda xs: grad(test3, 'x')(x=xs)[0], x_list))
+    dy_list = list(map(lambda xs: grad(test3, 'x')(x=xs)[1], x_list))
+    plt.plot(
+        x_list, y_list,
+        x_list, dy_list
+    )
+    # plt.axis('off')
+    plt.savefig('x**3.png')
+    plt.show()

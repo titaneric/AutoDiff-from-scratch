@@ -10,3 +10,4 @@ def wrap_func(numpy, local):
 wrap_func(_np.__dict__, globals())
 globals()['const'] = constant(_np.array)
 globals()['var'] = variable(_np.array)
+globals()['linspace'] = _np.linspace
