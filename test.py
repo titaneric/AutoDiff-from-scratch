@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cbook
 
 import autodiff
-from autodiff.core import forward_prop, backward_prop, graph_stack
+from autodiff.diff import grad
 import autodiff.numpy_grad.wrapper as np
 
 warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
@@ -31,14 +31,5 @@ def test2(x, y, z):
     )
 
 if __name__ == "__main__":
-    # print(forward_prop(test, z=2, y=-4, x=3, w=-1)())
-    print(forward_prop(test2, x=1, y=2, z=0)())
-    graph: nx.DiGraph = graph_stack.pop()
-    nx.draw(graph)
-    plt.show()
-    plt.savefig('graph.png', format='PNG')
-    # print(list(nx.topological_sort(graph)))
-    # print(graph.edges())
-    backward_prop(graph)
-    for node in nx.topological_sort(graph):
-        print(node, graph.nodes[node]['node'].gradient)
+    # print(grad(test2)(x=1, y=2, z=0))
+    print(grad(test)(z=2, y=-4, x=3, w=-1))

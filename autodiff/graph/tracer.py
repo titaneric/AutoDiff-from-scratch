@@ -25,13 +25,13 @@ def variable(array):
             # print(var_id, args, kwargs)
             if var_id not in info.vars:
                 node_index = len(graph.nodes())+1
-                node = VariableNode(kwargs)
+                node = VariableNode(var_id)
                 graph.add_node(node_index, node=node)
                 info.vars[var_id] = node_index
             else:
                 node_index = info.vars[var_id]
             info.stack.append(node_index)
-        print('var', node_index, kwargs)
+        # print('var', node_index, kwargs)
         return array(*kwargs.values())
     return var_wrapped
 
