@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cbook
 
 import autodiff
-from autodiff.diff import grad
+from autodiff.diff import value_and_grad
 import autodiff.numpy_grad.wrapper as np
 
 warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # print(grad(test2)(x=1, y=2, z=0))
     # print(grad(test)(z=2, y=-4, x=3, w=-1))
     x_list = np.linspace(-7, 7, 200)
-    y_list, dy_list = grad(test3, 'x')(x=x_list)
+    y_list, dy_list = value_and_grad(test3, 'x')(x=x_list)
 
     plt.plot(
         x_list, y_list,
