@@ -8,8 +8,8 @@ def wrap_func(numpy, local):
             local[name] = primitive(obj)
 
 wrap_func(_np.__dict__, globals())
-globals()['const'] = constant(_np.array)
-globals()['var'] = variable(_np.array)
+globals()['constant'] = constant(_np.array)
+globals()['variable'] = variable(_np.array)
 globals()['placeholder'] = placeholder(_np.array)
 
 globals()['linspace'] = _np.linspace

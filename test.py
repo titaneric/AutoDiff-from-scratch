@@ -13,26 +13,29 @@ warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 
 def tanh(x):
     return np.divide(
-        np.subtract(np.const(1), np.exp(np.negative(np.var(x)))),
-        np.add(np.const(1), np.exp(np.negative(np.var(x))))
+        np.subtract(np.constant(1), np.exp(np.negative(np.variable(x)))),
+        np.add(np.constant(1), np.exp(np.negative(np.variable(x))))
     )
 
 def test(x, y, z, w):
     return np.multiply(
-                np.add(np.multiply(np.var(x=x), np.var(y=y)),
-                    np.maximum(np.var(z=z), np.var(w=w))), 
-                np.const(2)
+                np.add(np.multiply(np.variable(x=x), np.variable(y=y)),
+                    np.maximum(np.variable(z=z), np.variable(w=w))), 
+                np.constant(2)
             )
 
 def test2(x, y, z):
     return np.multiply(
-        np.add(np.var(x=x), np.var(y=y)),
-        np.maximum(np.var(y=y),np.var(z=z))
+        np.add(np.variable(x=x), np.variable(y=y)),
+        np.maximum(np.variable(y=y),np.variable(z=z))
     )
 
 
 def test3(x):
-    return np.power(np.var(x=x), np.const(3))
+    return np.power(np.variable(x=x), np.constant(3))
+
+# def model(W, x, b):
+#     return np.multiply(np.variable(W), np.place)
 
 if __name__ == "__main__":
     # print(grad(test2)(x=1, y=2, z=0))
