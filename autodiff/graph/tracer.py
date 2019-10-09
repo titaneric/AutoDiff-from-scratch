@@ -2,7 +2,7 @@ from functools import wraps
 
 import networkx as nx
 
-from .node import ConstantNode, OperationNode, VariableNode
+from .node import ConstantNode, OperationNode, VariableNode, PlaceholderNode
 from .ctx_manager import GraphManager
 
 
@@ -33,6 +33,22 @@ def variable(array):
         # print('var', node_index, kwargs)
         return array(*kwargs.values())
     return var_wrapped
+
+def placeholder(array):
+    def place_wrapped(**kwargs):
+        with GraphManager() as (graph, info):
+            place_id = "".join(kwargs.keys())
+            if place_id not in info.places:
+                node_index = len(graph.nodes())+1
+                node = PlaceholderNode(place_id)
+                graph.add_node(node_index, node=node)
+                info.places[place_id] = node_index
+            else:
+                node_index = info.places[place_id]
+            info.stack.append(node_index)
+        # print('var', node_index, kwargs)
+        return array(*kwargs.values())
+    return place_wrapped
 
 def primitive(func):
     @wraps(func)

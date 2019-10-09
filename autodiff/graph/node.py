@@ -12,6 +12,11 @@ class VariableNode(Node):
         super().__init__()
         self.var = var
 
+class PlaceholderNode(Node):
+    def __init__(self, var):
+        super().__init__()
+        self.var = var
+
 class ConstantNode(Node):
     def __init__(self, constant):
         super().__init__()

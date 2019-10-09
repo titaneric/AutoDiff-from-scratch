@@ -7,7 +7,7 @@ from autodiff.graph.node import OperationNode, VariableNode
 primitive_vhp = defaultdict(dict)
 
 graph_stack = []
-GraphInfo = namedtuple('GraphInfo', 'stack, vars')
+GraphInfo = namedtuple('GraphInfo', 'stack, vars, places')
 graph_info_dict = defaultdict(GraphInfo)
 
 def forward_prop(func, **assignd):
