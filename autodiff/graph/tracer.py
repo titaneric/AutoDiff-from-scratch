@@ -3,16 +3,14 @@ from functools import wraps
 import networkx as nx
 
 from .node import ConstantNode, OperationNode, VariableNode, PlaceholderNode
-from .ctx_manager import GraphManager
+from .manager import GraphManager, add_node
 
 
 def constant(array):
     def const_wrapped(*args, **kwargs):
         with GraphManager() as (graph, info):
-            node_index = len(graph.nodes())+1
             node = ConstantNode(args)
-            graph.add_node(node_index, node=node)
-
+            node_index = add_node(graph, node)
             info.stack.append(node_index)
         # print('const', node_index, const, args)
         return array(*args, **kwargs)
@@ -23,9 +21,8 @@ def variable(array):
         with GraphManager() as (graph, info):
             var_id = "".join(kwargs.keys())
             if var_id not in info.vars:
-                node_index = len(graph.nodes())+1
                 node = VariableNode(var_id)
-                graph.add_node(node_index, node=node)
+                node_index = add_node(graph, node)
                 info.vars[var_id] = node_index
             else:
                 node_index = info.vars[var_id]
@@ -39,9 +36,8 @@ def placeholder(array):
         with GraphManager() as (graph, info):
             place_id = "".join(kwargs.keys())
             if place_id not in info.places:
-                node_index = len(graph.nodes())+1
                 node = PlaceholderNode(place_id)
-                graph.add_node(node_index, node=node)
+                node_index = add_node(graph, node)
                 info.places[place_id] = node_index
             else:
                 node_index = info.places[place_id]
@@ -55,9 +51,8 @@ def primitive(func):
     def func_wrapped(*args, **kwargs):
         with GraphManager() as (graph, info):
             result = func(*args, **kwargs)
-            node_index = len(graph.nodes())+1
             node = OperationNode(func, args, kwargs, result)
-            graph.add_node(node_index, node=node)
+            node_index = add_node(graph, node)
 
             parents = info.stack[-len(args):]
             for parent in parents:

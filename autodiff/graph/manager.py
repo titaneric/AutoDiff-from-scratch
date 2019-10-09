@@ -15,3 +15,8 @@ class GraphManager:
     def __exit__(self, *args):
         graph_stack.append(self.graph)
         graph_info_dict[self.graph] = self.graph_info
+
+def add_node(graph, node):
+    node_index = len(graph.nodes())+1
+    graph.add_node(node_index, node=node)
+    return node_index
