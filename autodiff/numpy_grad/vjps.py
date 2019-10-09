@@ -1,7 +1,7 @@
 #pylint: disable=no-member
 from math import log
 
-from . import wrapper as wnp
+from autodiff.numpy_grad import wrapper as wnp
 from autodiff.core import register_vjp
 
 # print(__name__)
