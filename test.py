@@ -44,9 +44,13 @@ def model(W, b, feed_dict={}):
 def known_model(feed_dict={}):
     return np.add(np.multiply(np.Constant(2), np.Placeholder(x=feed_dict['x'])), np.Constant(1))
 
-def mse(feed_dict={}):
-    return np.multiply(np.dot(np.Placeholder(predicted_y=feed_dict['predicted_y']), np.Placeholder(true_y=feed_dict['true_y'])), np.Constant(1/2))
+# def mse(feed_dict={}):
+    # diff = np.subtract(np.Placeholder(predicted_y=feed_dict['predicted_y']), np.Placeholder(true_y=feed_dict['true_y']))
+    # return np.multiply(np.dot(diff, diff), np.Constant(1/2))
 
+def mse(feed_dict={}):
+    diff = np.subtract(np.Placeholder(predicted_y=feed_dict['predicted_y']), np.Placeholder(true_y=feed_dict['true_y']))
+    return np.multiply(np.power(diff, np.Constant(2)), np.Constant(1/2))
 
 def power_demo():
     x_list = np.linspace(-7, 7, 200)
@@ -107,8 +111,8 @@ def test_loss():
     y = 2 * x + 5 + noise
     predict = value(known_model)(feed_dict={'x': x})
     print(predict)
-    l = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predict, 'true_y': y})
-    print(l)
+    v, l = value_and_grad(mse, 'predicted_y')(feed_dict={'predicted_y': predict, 'true_y': y})
+    print(v)
 
 def test_train():
     data_size = 10
@@ -123,11 +127,12 @@ def test_train():
     W = _np.random.random()
     b = _np.random.random()
     print(W, b)
-    predicted_y= value(model)(W=W, b=b, feed_dict={'x': x})
+    predicted_y, grad_value= value_and_grad(model)(W=W, b=b, feed_dict={'x': x})
     loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
-    print(loss_grad)
+    print(np.array_equal(loss_grad, predicted_y - y))
+    
 
 if __name__ == "__main__":
     # print(grad(test2)(x=1, y=2, z=0))
     # print(grad(test)(z=2, y=-4, x=3, w=-1))
-    power_demo()
+    test_train()

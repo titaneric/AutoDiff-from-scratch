@@ -59,7 +59,7 @@ def primitive(func):
                 graph.add_edge(parent, node_index)
                 info.stack.pop()
 
-            # print('fun', node_index, func.__name__, args, kwargs, )
+            # print('fun', node_index, func.__name__, result)
 
             info.stack.append(node_index)
         return result
