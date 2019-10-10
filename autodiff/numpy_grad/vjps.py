@@ -1,5 +1,5 @@
 #pylint: disable=no-member
-from math import log
+import numpy as onp
 
 from autodiff.numpy_grad import wrapper as wnp
 from autodiff.core import register_vjp
@@ -69,7 +69,7 @@ register_vjp(wnp.minimum, [
 
 register_vjp(wnp.power, [
     lambda upstream, result, x, y: upstream * (y * x ** (y - 1)),  # w.r.t. x
-    lambda upstream, result, x, y: upstream * (result * log(x)),  # w.r.t. y
+    lambda upstream, result, x, y: upstream * (result * onp.log(x)),  # w.r.t. y
 ])
 
 # shamelessly taken from autograd

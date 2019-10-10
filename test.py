@@ -49,8 +49,8 @@ def mse(feed_dict={}):
 
 
 def power_demo():
-    # x_list = np.linspace(-7, 7, 200)
-    x_list = 5
+    x_list = np.linspace(-7, 7, 200)
+    # x_list = 5
     y_list, dy_list = value_and_grad(test4, 'x')(x=x_list)
     # print(y_list, dy_list)
 
