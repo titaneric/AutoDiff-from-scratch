@@ -11,6 +11,7 @@ from autodiff.diff import value_and_grad, value, grad
 import autodiff.numpy_grad.wrapper as np
 
 warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def tanh(x):
     return np.divide(
@@ -68,31 +69,33 @@ def power_demo():
 
 def train_model():
     data_size = 10
-    x = np.linspace(-7, 7, data_size)
-    # noise = _np.random.randint(-3, 3, (data_size))
-    noise = _np.random.random((data_size))
-    y = 2 * x + 5 + noise
+    X = np.linspace(-7, 7, data_size)
+    noise = _np.random.randint(-3, 3, (data_size))
+    # noise = _np.random.random((data_size))
+    Y = 2 * X + 5 + noise
 
 
     lr = 0.001
     epoch = 10
     W = _np.random.random()
     b = _np.random.random()
-
+    print(W, b)
     for _ in range(epoch):
-        _, grad = value_and_grad(mse)(W=W, b=b, feed_dict={'x': x, 'true_y': y})
-        print(grad)
-        W -= lr * grad['W']
-        b -= lr * grad['b']
+        for x, y in zip(X, Y):
+            predicted_y, grad_value= value_and_grad(model)(W=W, b=b, feed_dict={'x': x})
+            loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
+            # print(predicted_y, y)
+            W -= lr * grad_value['W'] * loss_grad
+            b -= lr * grad_value['b'] * loss_grad
     
-
-    predict, _ = value_and_grad(mse)(W=W, b=b, feed_dict={'x': x, 'true_y': y})
+    print(W, b)
+    predict = value(model)(W=W, b=b, feed_dict={'x': X})
     
     plt.scatter(
-        x, y,
+        X, Y,
     )
     plt.plot(
-        x, predict
+        X, predict
     )
     # plt.axis('off')
     plt.savefig('result.png')
@@ -120,19 +123,17 @@ def test_train():
     # noise = _np.random.randint(-3, 3, (data_size))
     noise = _np.random.random((data_size))
     y = 2 * x + 5 + noise
-
-
-    lr = 0.001
-    epoch = 10
     W = _np.random.random()
     b = _np.random.random()
     print(W, b)
     predicted_y, grad_value= value_and_grad(model)(W=W, b=b, feed_dict={'x': x})
     loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
     print(np.array_equal(loss_grad, predicted_y - y))
+    print(np.array_equal(1, grad_value['b']))
+    print(np.array_equal(x, grad_value['W']))
     
 
 if __name__ == "__main__":
     # print(grad(test2)(x=1, y=2, z=0))
     # print(grad(test)(z=2, y=-4, x=3, w=-1))
-    test_train()
+    train_model()
