@@ -72,6 +72,35 @@ register_vjp(wnp.power, [
     lambda upstream, result, x, y: upstream * (result * log(x)),  # w.r.t. y
 ])
 
-# shamelessly taken from autograd, brilliant!
+# shamelessly taken from autograd
 def balanced_eq(x, z, y):
     return (x == z) / (1.0 + (x == y)) 
+
+"""
+    Matrix calculation
+"""
+
+def dot_vjp_first(upstream, result, x, y):
+    if max(wnp.ndim(x), wnp.ndim(y)) > 2:
+        raise NotImplementedError("Not support dimension currently!")
+    
+    if wnp.ndim(x) == 0:
+        return wnp.sum(upstream * y)
+    
+    if wnp.ndim(x) == 1 and wnp.ndim(y) == 1:
+        return upstream * y
+
+def dot_vjp_second(upstream, result, x, y):
+    if max(wnp.ndim(x), wnp.ndim(y)) > 2:
+        raise NotImplementedError("Not support dimension currently!")
+    
+    if wnp.ndim(x) == 0:
+        return wnp.sum(upstream * x)
+    
+    if wnp.ndim(x) == 1 and wnp.ndim(y) == 1:
+        return upstream * x
+
+register_vjp(wnp.dot, [
+    dot_vjp_first ,  # w.r.t. x
+    dot_vjp_second ,  # w.r.t. y
+])

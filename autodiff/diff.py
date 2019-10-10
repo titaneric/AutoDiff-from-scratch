@@ -1,5 +1,13 @@
 from autodiff.core import forward_prop, backward_prop, graph_stack
 
+def value(func):
+    def valueWrapped(**kwargs):
+        # print(kwargs)
+        forward_func = forward_prop(func, **kwargs)
+        return forward_func()
+    
+    return valueWrapped
+
 def grad(func, wrt=None):
     def gradVal(**kwargs):
         # print(kwargs)
