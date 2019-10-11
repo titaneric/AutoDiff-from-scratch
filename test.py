@@ -9,6 +9,7 @@ import numpy as _np
 import autodiff
 from autodiff.diff import value_and_grad, value, grad
 import autodiff.numpy_grad.wrapper as np
+from utils.datasets import Dataset, DataLoader
 
 warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -68,25 +69,26 @@ def power_demo():
     plt.show()
 
 def train_model():
-    data_size = 10
+    data_size = 100
     X = np.linspace(-7, 7, data_size)
     noise = _np.random.randint(-3, 3, (data_size))
     # noise = _np.random.random((data_size))
     Y = 2 * X + 5 + noise
 
+    dataset = Dataset(X, Y)
+    dataloader = DataLoader(dataset)
 
     lr = 0.001
-    epoch = 10
+    epoch = 300
     W = _np.random.random()
     b = _np.random.random()
     print(W, b)
     for _ in range(epoch):
-        for x, y in zip(X, Y):
-            predicted_y, grad_value= value_and_grad(model)(W=W, b=b, feed_dict={'x': x})
-            loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
-            # print(predicted_y, y)
-            W -= lr * grad_value['W'] * loss_grad
-            b -= lr * grad_value['b'] * loss_grad
+        x, y = dataloader.next_batch(16)
+        predicted_y, grad_value= value_and_grad(model)(W=W, b=b, feed_dict={'x': x})
+        loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
+        W -= lr * _np.average(grad_value['W'] * loss_grad)
+        b -= lr * _np.average(grad_value['b'] * loss_grad)
     
     print(W, b)
     predict = value(model)(W=W, b=b, feed_dict={'x': X})
@@ -95,7 +97,7 @@ def train_model():
         X, Y,
     )
     plt.plot(
-        X, predict
+        X, predict, 'r'
     )
     # plt.axis('off')
     plt.savefig('result.png')
