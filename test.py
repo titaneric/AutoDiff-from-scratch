@@ -40,8 +40,8 @@ def test3(x):
 def test4(x):
     return np.multiply(np.power(np.Variable(x=x), np.Constant(2)), np.Constant(1/2))
 
-def model(W, b, feed_dict={}):
-    return np.add(np.multiply(np.Variable(W=W), np.Placeholder(x=feed_dict['x'])), np.Variable(b=b))
+def model(W, feed_dict={}):
+    return np.multiply(np.Variable(W=W), np.Placeholder(x=feed_dict['x']))
 
 def known_model(feed_dict={}):
     return np.add(np.multiply(np.Constant(2), np.Placeholder(x=feed_dict['x'])), np.Constant(1))
@@ -72,26 +72,22 @@ def train_model():
     data_size = 100
     X = np.linspace(-7, 7, data_size)
     noise = _np.random.randint(-3, 3, (data_size))
-    # noise = _np.random.random((data_size))
-    Y = 2 * X + 5 + noise
+    Y = 2 * X + noise
 
     dataset = Dataset(X, Y)
     dataloader = DataLoader(dataset)
 
     lr = 0.001
-    epoch = 300
+    epoch = 30
     W = _np.random.random()
-    b = _np.random.random()
-    print(W, b)
     for _ in range(epoch):
-        x, y = dataloader.next_batch(16)
-        predicted_y, grad_value= value_and_grad(model)(W=W, b=b, feed_dict={'x': x})
+        x, y = dataloader.next_batch(10)
+        predicted_y, grad_value= value_and_grad(model)(W=W, feed_dict={'x': x})
         loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
-        W -= lr * _np.average(grad_value['W'] * loss_grad)
-        b -= lr * _np.average(grad_value['b'] * loss_grad)
+        W -= lr * _np.dot(grad_value['W'],  loss_grad)   # x.T * (y_hat - y)
+        
     
-    print(W, b)
-    predict = value(model)(W=W, b=b, feed_dict={'x': X})
+    predict = value(model)(W=W, feed_dict={'x': X})
     
     plt.scatter(
         X, Y,
