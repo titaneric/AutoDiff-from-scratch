@@ -83,12 +83,21 @@ def balanced_eq(x, z, y):
 def dot_vjp_first(upstream, result, x, y):
     if max(wnp.ndim(x), wnp.ndim(y)) > 2:
         raise NotImplementedError("Not support dimension currently!")
-    
+
     if wnp.ndim(x) == 0:
         return wnp.sum(upstream * y)
     
     if wnp.ndim(x) == 1 and wnp.ndim(y) == 1:
         return upstream * y
+    
+    if wnp.ndim(x) == 2 and wnp.ndim(y) == 1:
+        return upstream[:, None] * y if wnp.ndim(upstream) == 1 else upstream * y
+    if wnp.ndim(x) == 1 and wnp.ndim(y) == 2:
+        return onp.dot(y, upstream)
+    
+    return onp.dot(upstream, y.T)
+    
+    
 
 def dot_vjp_second(upstream, result, x, y):
     if max(wnp.ndim(x), wnp.ndim(y)) > 2:
@@ -99,6 +108,14 @@ def dot_vjp_second(upstream, result, x, y):
     
     if wnp.ndim(x) == 1 and wnp.ndim(y) == 1:
         return upstream * x
+    
+    if wnp.ndim(x) == 2 and wnp.ndim(y) == 1:
+        return onp.dot(upstream, y)
+    
+    if wnp.ndim(x) == 1 and wnp.ndim(y) == 2:
+        return x[:, None] * upstream
+    
+    return onp.dot(x.T, upstream)
 
 register_vjp(wnp.dot, [
     dot_vjp_first ,  # w.r.t. x

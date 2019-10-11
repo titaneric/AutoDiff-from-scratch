@@ -1,6 +1,7 @@
 from collections import defaultdict, namedtuple
 
 import networkx as nx
+import numpy as onp
 
 from autodiff.graph.node import OperationNode, VariableNode, PlaceholderNode
 
@@ -22,7 +23,7 @@ def forward_prop(func, **assignd):
     return forward_wrap
 
 def backward_prop(graph: nx.DiGraph):
-    graph.nodes[len(graph.nodes())]['node'].gradient = 1
+    graph.nodes[len(graph.nodes())]['node'].gradient = onp.array(1)
 
     gradient_dict = {}
     for node in reversed(list(nx.topological_sort(graph))):

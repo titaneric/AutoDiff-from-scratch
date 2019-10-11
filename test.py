@@ -41,10 +41,10 @@ def test4(x):
     return np.multiply(np.power(np.Variable(x=x), np.Constant(2)), np.Constant(1/2))
 
 def model(W, feed_dict={}):
-    return np.multiply(np.Variable(W=W), np.Placeholder(x=feed_dict['x']))
+    return np.dot(np.Placeholder(x=feed_dict['x']), np.Variable(W=W))
 
 def known_model(feed_dict={}):
-    return np.add(np.multiply(np.Constant(2), np.Placeholder(x=feed_dict['x'])), np.Constant(1))
+    return np.dot(np.Placeholder(x=feed_dict['x']), np.Constant([2, 3]))
 
 # def mse(feed_dict={}):
     # diff = np.subtract(np.Placeholder(predicted_y=feed_dict['predicted_y']), np.Placeholder(true_y=feed_dict['true_y']))
@@ -71,23 +71,29 @@ def power_demo():
 def train_model():
     data_size = 100
     X = np.linspace(-7, 7, data_size)
-    noise = _np.random.randint(-3, 3, (data_size))
-    Y = 2 * X + noise
+    aug_X = _np.c_[_np.ones(data_size), X]
+    noise = _np.random.randint(-3, 3, (data_size))    
+    theta = _np.array([10, 5])
+    Y = _np.dot(aug_X, theta) + noise
+    # print(Y.shape, aug_X.shape)
 
-    dataset = Dataset(X, Y)
+    W = _np.random.random((2, 1)) 
+
+    dataset = Dataset(aug_X, Y)
     dataloader = DataLoader(dataset)
 
     lr = 0.001
-    epoch = 30
-    W = _np.random.random()
+    epoch = 300
     for _ in range(epoch):
         x, y = dataloader.next_batch(10)
         predicted_y, grad_value= value_and_grad(model)(W=W, feed_dict={'x': x})
+        # print(predicted_y.shape, y.shape)
+        # print((predicted_y-y[:,None]).shape)
         loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
-        W -= lr * _np.dot(grad_value['W'],  loss_grad)   # x.T * (y_hat - y)
+        W -= lr * _np.dot(grad_value['W'],  (predicted_y-y[:,None]))   # x.T * (y_hat - y)
         
-    
-    predict = value(model)(W=W, feed_dict={'x': X})
+    print(W, theta)
+    predict = value(model)(W=W, feed_dict={'x': aug_X})
     
     plt.scatter(
         X, Y,
@@ -103,32 +109,37 @@ def train_model():
 def test_known_model():
     data_size = 10
     x = np.linspace(-7, 7, data_size)
-    print(value(known_model)(feed_dict={'x': x}))
+    x = _np.c_[_np.ones(data_size), x]
+    # print(x)
+    print(grad(known_model, 'x')(feed_dict={'x': x}))
 
 def test_loss():
     data_size = 10
     x = np.linspace(-7, 7, data_size)
+    x = _np.c_[_np.ones(data_size), x]
     noise = _np.random.random((data_size))
-    y = 2 * x + 5 + noise
+    theta = _np.array([2, 5])
+    y = _np.dot(x, theta) + noise
     predict = value(known_model)(feed_dict={'x': x})
     print(predict)
     v, l = value_and_grad(mse, 'predicted_y')(feed_dict={'predicted_y': predict, 'true_y': y})
-    print(v)
+    print(v, l)
 
 def test_train():
     data_size = 10
     x = np.linspace(-7, 7, data_size)
-    # noise = _np.random.randint(-3, 3, (data_size))
+    x = _np.c_[_np.ones(data_size), x]
+    
     noise = _np.random.random((data_size))
-    y = 2 * x + 5 + noise
-    W = _np.random.random()
-    b = _np.random.random()
-    print(W, b)
-    predicted_y, grad_value= value_and_grad(model)(W=W, b=b, feed_dict={'x': x})
+    theta = _np.array([2, 5])
+    y = _np.dot(x, theta) + noise
+
+    W = _np.random.random((2, 1))    
+    predicted_y, grad_value= value_and_grad(model)(W=W, feed_dict={'x': x})
     loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
+    print(predicted_y.shape, y.shape, x.shape)
     print(np.array_equal(loss_grad, predicted_y - y))
-    print(np.array_equal(1, grad_value['b']))
-    print(np.array_equal(x, grad_value['W']))
+    print(np.array_equal(x.T, grad_value['W']))
     
 
 if __name__ == "__main__":
