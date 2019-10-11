@@ -31,12 +31,13 @@ def backward_prop(graph: nx.DiGraph):
         if isinstance(child_node, OperationNode):
             func, args, kwargs, result, arg_num = child_node.recipe
             upstream = child_node.gradient
-            # print(node, func.__name__, upstream)
+            # print(func.__name__, upstream)
             for i, parent in zip(range(arg_num), graph.predecessors(node)):
                 vhp = primitive_vhp[func.__name__][i]
                 downstream = vhp(upstream, result, *args)
                 graph.nodes[parent]['node'].gradient += downstream
-                # print(parent,":", downstream)
+                # tmp = graph.nodes[parent]['node']
+                # print("\t:", "" if not is_wrt(tmp) else tmp.var, downstream)
         elif is_wrt(child_node):
             gradient_dict[child_node.var] = child_node.gradient
     

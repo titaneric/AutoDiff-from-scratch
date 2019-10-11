@@ -38,23 +38,23 @@ register_vjp(wnp.cos, [
     Binary operation
 """
 register_vjp(wnp.add, [
-    lambda upstream, result, x, y: upstream,  # w.r.t. x
-    lambda upstream, result, x, y: upstream,  # w.r.t. y
+    lambda upstream, result, x, y: unbroadcast(x, upstream),  # w.r.t. x
+    lambda upstream, result, x, y: unbroadcast(y, upstream),  # w.r.t. y
 ])
 
 register_vjp(wnp.subtract, [
-    lambda upstream, result, x, y: upstream,  # w.r.t. x
-    lambda upstream, result, x, y: -upstream,  # w.r.t. y
+    lambda upstream, result, x, y: unbroadcast(x, upstream, other=y),  # w.r.t. x
+    lambda upstream, result, x, y: unbroadcast(y, -upstream, other=x),  # w.r.t. y
 ])
 
 register_vjp(wnp.multiply, [
-    lambda upstream, result, x, y: upstream * y,  # w.r.t. x
-    lambda upstream, result, x, y: upstream * x,  # w.r.t. y
+    lambda upstream, result, x, y: unbroadcast(x, upstream * y),  # w.r.t. x
+    lambda upstream, result, x, y: unbroadcast(y, upstream * x),  # w.r.t. y
 ])
 
 register_vjp(wnp.true_divide, [
-    lambda upstream, result, x, y: upstream / y,  # w.r.t. x
-    lambda upstream, result, x, y: upstream * (-x / y ** 2),  # w.r.t. y
+    lambda upstream, result, x, y: unbroadcast(x, upstream / y),  # w.r.t. x
+    lambda upstream, result, x, y: unbroadcast(y, upstream * (-x / y ** 2)),  # w.r.t. y
 ])
 
 register_vjp(wnp.maximum, [
@@ -68,11 +68,37 @@ register_vjp(wnp.minimum, [
 ])
 
 register_vjp(wnp.power, [
-    lambda upstream, result, x, y: upstream * (y * x ** (y - 1)),  # w.r.t. x
-    lambda upstream, result, x, y: upstream * (result * onp.log(x)),  # w.r.t. y
+    lambda upstream, result, x, y: unbroadcast(x, upstream * (y * x ** (y - 1))),  # w.r.t. x
+    lambda upstream, result, x, y: unbroadcast(y, upstream * (result * onp.log(replace_zero(x, 1.)))),  # w.r.t. y
 ])
 
 # shamelessly taken from autograd
+def replace_zero(x, val):
+    return onp.where(x, x, val)
+
+def unbroadcast(target, g, broadcast_idx=0, other=None):
+    """
+        Let downstream have the same shape as target
+    """
+    # if onp.ndim(g) == 2:
+    #     g = g.diagonal()[:,None]
+    # print("-" * 10)
+    # print(onp.ndim(g) > onp.ndim(target), g.shape, target.shape)
+    # print(other)
+    # print(target)
+    # print("Before", g)
+    while onp.ndim(g) > onp.ndim(target):
+        g = onp.sum(g, axis=broadcast_idx)
+        # print("Sum", g)
+    
+    if onp.ndim(g) == onp.ndim(target):
+        for axis, size in enumerate(onp.shape(target)):
+            if size == 1:
+                g = onp.sum(g, axis=axis, keepdims=True)
+    # print("After", g)
+    # print("-" * 10)
+    return g
+
 def balanced_eq(x, z, y):
     return (x == z) / (1.0 + (x == y)) 
 
