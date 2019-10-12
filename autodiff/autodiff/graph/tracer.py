@@ -2,8 +2,8 @@ from functools import wraps
 
 import networkx as nx
 
-from autodiff.graph.node import ConstantNode, OperationNode, VariableNode, PlaceholderNode
-from autodiff.graph.manager import GraphManager, add_node
+from .node import ConstantNode, OperationNode, VariableNode, PlaceholderNode
+from .manager import GraphManager, add_node
 
 
 def constant(array):

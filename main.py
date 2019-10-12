@@ -7,11 +7,11 @@ import matplotlib.cbook
 import numpy as _np
 
 import autodiff
-from autodiff.diff import value_and_grad, value, grad
-import autodiff.numpy_grad.wrapper as np
-from utils.datasets import Dataset, DataLoader
-from nn.optimizer import GradientDescent
-from nn.criterion import MSE
+from autodiff.autodiff.diff import value_and_grad, value, grad
+import autodiff.autodiff.numpy_grad.wrapper as np
+from autodiff.utils.datasets import Dataset, DataLoader
+from autodiff.nn.optimizer import GradientDescent
+from autodiff.nn.criterion import MSE
 
 warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 warnings.filterwarnings("ignore", category=RuntimeWarning)

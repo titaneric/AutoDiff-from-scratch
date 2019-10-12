@@ -1,8 +1,8 @@
 import numpy as _np
 
 import autodiff
-from autodiff.diff import value_and_grad, value, grad
-import autodiff.numpy_grad.wrapper as np
+from autodiff.autodiff.diff import value_and_grad, value, grad
+import autodiff.autodiff.numpy_grad.wrapper as np
 
 class Optimizer:
     def __init__(self, lr, parameter):

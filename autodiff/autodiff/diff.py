@@ -1,4 +1,4 @@
-from autodiff.core import forward_prop, backward_prop, graph_stack
+from .core import forward_prop, backward_prop, graph_stack
 
 def value(func):
     def valueWrapped(**kwargs):

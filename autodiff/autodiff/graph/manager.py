@@ -1,6 +1,6 @@
 import networkx as nx
 
-from autodiff.core import graph_stack, graph_info_dict, GraphInfo
+from ..core import graph_stack, graph_info_dict, GraphInfo
 
 
 class GraphManager:

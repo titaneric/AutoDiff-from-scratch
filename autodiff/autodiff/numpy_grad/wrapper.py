@@ -2,7 +2,7 @@ import types
 
 import numpy as _np
 
-from autodiff.graph.tracer import primitive, constant, variable, placeholder
+from ..graph.tracer import primitive, constant, variable, placeholder
 
 nograd_functions = [
     _np.ndim, _np.shape, _np.iscomplexobj, _np.result_type, _np.zeros_like,

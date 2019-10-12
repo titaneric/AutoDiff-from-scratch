@@ -3,7 +3,7 @@ from collections import defaultdict, namedtuple
 import networkx as nx
 import numpy as onp
 
-from autodiff.graph.node import OperationNode, VariableNode, PlaceholderNode
+from .graph.node import OperationNode, VariableNode, PlaceholderNode
 
 primitive_vhp = defaultdict(dict)
 
