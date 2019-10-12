@@ -21,7 +21,6 @@ def grad(func, wrt=None):
 
 def value_and_grad(func, wrt=None):
     def gradVal(**kwargs):
-        # print(kwargs)
         forward_func = forward_prop(func, **kwargs)
         end_value = forward_func()
         graph = graph_stack.pop()

@@ -10,6 +10,8 @@ import autodiff
 from autodiff.diff import value_and_grad, value, grad
 import autodiff.numpy_grad.wrapper as np
 from utils.datasets import Dataset, DataLoader
+from nn.optimizer import GradientDescent
+from nn.criterion import MSE
 
 warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -43,12 +45,15 @@ def train_model():
 
     # print(W)
     lr = 0.001
+    opt = GradientDescent(lr, W)
+    loss_func = MSE()
     epoch = 100
     for _ in range(epoch):
-        x, y = dataloader.next_batch(100)
-        predicted_y, grad_value= value_and_grad(model)(W=W, feed_dict={'x': x})
-        loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
-        W -= lr * _np.dot(grad_value['W'],  loss_grad)  #x.T * (y_hat - y)
+        x, y = dataloader.next_batch(50)
+        predicted_y, grad_value= value_and_grad(model, 'W')(W=W, feed_dict={'x': x})
+        _, loss_grad = loss_func.calc_loss(y, predicted_y)
+        opt.step(grad_value, loss_grad)
+
         
     print(W)
     print(theta)
@@ -101,4 +106,4 @@ def test_train():
 if __name__ == "__main__":
     # print(grad(test2)(x=1, y=2, z=0))
     # print(grad(test)(z=2, y=-4, x=3, w=-1))
-    test_train()
+    train_model()
