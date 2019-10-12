@@ -30,30 +30,28 @@ def mse(feed_dict={}):
 
 def train_model():
     data_size = 100
-    X = np.linspace(-7, 7, data_size)
+    X = 2 * _np.random.rand(data_size,1)
     aug_X = _np.c_[_np.ones(data_size), X]
-    noise = _np.random.randint(-3, 3, (data_size))    
-    theta = _np.array([10, 10])
-    Y = _np.dot(aug_X, theta) + noise
-    Y = Y[:,None]
-    # print("training shape", Y.shape, aug_X.shape)
+    theta = _np.array([[5], [10]])
+    Y = aug_X @ theta + _np.random.randn(data_size,1)
+    print("training shape", X.shape, Y.shape)
 
     W = _np.random.random((2, 1)) 
 
     dataset = Dataset(aug_X, Y)
     dataloader = DataLoader(dataset)
 
-    print(W)
+    # print(W)
     lr = 0.001
-    epoch = 300
+    epoch = 100
     for _ in range(epoch):
-        x, y = dataloader.next_batch(2)
+        x, y = dataloader.next_batch(100)
         predicted_y, grad_value= value_and_grad(model)(W=W, feed_dict={'x': x})
-        # print("Y", predicted_y.shape, y.shape)
         loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': y})
         W -= lr * _np.dot(grad_value['W'],  loss_grad)  #x.T * (y_hat - y)
         
-    print(W, theta)
+    print(W)
+    print(theta)
     predict = value(model)(W=W, feed_dict={'x': aug_X})
     
     plt.scatter(
