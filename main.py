@@ -6,9 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cbook
 import numpy as _np
 
-import autodiff
-from autodiff.autodiff.diff import value_and_grad, value, grad
-import autodiff.autodiff.numpy_grad.wrapper as np
+import autodiff as ad
+from autodiff import value_and_grad, value, grad
 from autodiff.utils.datasets import Dataset, DataLoader
 from autodiff.nn.optimizer import GradientDescent
 from autodiff.nn.criterion import MSE
@@ -17,18 +16,18 @@ warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def model(W, feed_dict={}):
-    return np.dot(np.Placeholder(x=feed_dict['x']), np.Variable(W=W))
+    return ad.dot(ad.Placeholder(x=feed_dict['x']), ad.Variable(W=W))
 
 def known_model(feed_dict={}):
-    return np.dot(np.Placeholder(x=feed_dict['x']), np.Constant([[2],[3]]))
+    return ad.dot(ad.Placeholder(x=feed_dict['x']), ad.Constant([[2],[3]]))
 
 # def mse(feed_dict={}):
-    # diff = np.subtract(np.Placeholder(predicted_y=feed_dict['predicted_y']), np.Placeholder(true_y=feed_dict['true_y']))
-    # return np.multiply(np.dot(diff, diff), np.Constant(1/2))
+    # diff = ad.subtract(ad.Placeholder(predicted_y=feed_dict['predicted_y']), ad.Placeholder(true_y=feed_dict['true_y']))
+    # return ad.multiply(ad.dot(diff, diff), ad.Constant(1/2))
 
 def mse(feed_dict={}):
-    diff = np.subtract(np.Placeholder(predicted_y=feed_dict['predicted_y']), np.Placeholder(true_y=feed_dict['true_y']))
-    return np.multiply(np.power(diff, np.Constant(2)), np.Constant(1/2))
+    diff = ad.subtract(ad.Placeholder(predicted_y=feed_dict['predicted_y']), ad.Placeholder(true_y=feed_dict['true_y']))
+    return ad.multiply(ad.power(diff, ad.Constant(2)), ad.Constant(1/2))
 
 def train_model():
     data_size = 100
@@ -72,7 +71,7 @@ def train_model():
     
 def test_known_model():
     data_size = 10
-    x = np.linspace(-7, 7, data_size)
+    x = ad.linspace(-7, 7, data_size)
     x = _np.c_[_np.ones(data_size), x]
     # print(x)
     print(grad(known_model, 'x')(feed_dict={'x': x}))
@@ -99,8 +98,8 @@ def test_train():
     predicted_y, grad_value= value_and_grad(model)(W=W, feed_dict={'x': aug_X})
     loss_grad = grad(mse, 'predicted_y')(feed_dict={'predicted_y': predicted_y, 'true_y': Y})
     print(predicted_y.shape, Y.shape, X.shape)
-    print(np.array_equal(loss_grad, predicted_y - Y))
-    print(np.array_equal(aug_X.T, grad_value['W']))
+    print(ad.array_equal(loss_grad, predicted_y - Y))
+    print(ad.array_equal(aug_X.T, grad_value['W']))
     
 
 if __name__ == "__main__":
