@@ -15,8 +15,8 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def tanh(x):
     return ad.divide(
-        ad.subtract(ad.Constant(1), ad.exp(ad.negative(ad.Variable(x)))),
-        ad.add(ad.Constant(1), ad.exp(ad.negative(ad.Variable(x)))))
+        ad.subtract(ad.Constant(1), ad.exp(ad.negative(ad.Variable(x=x)))),
+        ad.add(ad.Constant(1), ad.exp(ad.negative(ad.Variable(x=x)))))
 
 
 def test(x, y, z, w):

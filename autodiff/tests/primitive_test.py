@@ -1,24 +1,27 @@
 #pylint: disable=no-member
 import unittest
 
-
 import numpy as _np
 
-import autodiff
-from autodiff.autodiff.diff import value_and_grad, value, grad
-import autodiff.autodiff.numpy_grad.wrapper as np
+import autodiff as ad
+from autodiff import value_and_grad, value, grad
 
-# def binary_func_helper(func, v1, v2):
-    # return func(np.Variable(v1=v1), np.Variable(v2=v2))
 
-class TestStringMethods(unittest.TestCase):
+def binary_func_helper(func):
+    def true_binary_func(*args, **kwargs):
+        v1 = ad.Variable(v1=kwargs["v1"])
+        v2 = ad.Variable(v2=kwargs["v2"])
+        return ad.__dict__[func](v1, v2)
 
+    return true_binary_func
+
+
+class TestVHPMethods(unittest.TestCase):
     def test_add(self):
         v1, v2 = 1, 2
-        def add(v1, v2):
-            return np.add(np.Variable(v1=v1), np.Variable(v2=v2))
 
-        v, g = value_and_grad(add)(v1=v1, v2=v2)
+        v, g = value_and_grad(binary_func_helper("add"))(v1=v1, v2=v2)
+
         self.assertEqual(v, v1 + v2)
         self.assertEqual(g['v1'], 1)
         self.assertEqual(g['v2'], 1)
