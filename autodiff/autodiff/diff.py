@@ -1,12 +1,14 @@
 from .core import forward_prop, backward_prop, graph_stack
 
+
 def value(func):
     def valueWrapped(**kwargs):
         # print(kwargs)
         forward_func = forward_prop(func, **kwargs)
         return forward_func()
-    
+
     return valueWrapped
+
 
 def grad(func, wrt=None):
     def gradVal(**kwargs):
@@ -19,6 +21,7 @@ def grad(func, wrt=None):
 
     return gradVal
 
+
 def value_and_grad(func, wrt=None):
     def gradVal(**kwargs):
         forward_func = forward_prop(func, **kwargs)
@@ -28,4 +31,3 @@ def value_and_grad(func, wrt=None):
         return (end_value, grad) if wrt is None else (end_value, grad[wrt])
 
     return gradVal
-

@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "env/bin/python"
+    "python.pythonPath": "/home/chenyee/anaconda3/bin/python",
+    "python.formatting.provider": "yapf"
 }

@@ -1,8 +1,8 @@
 import numpy as _np
 
-import autodiff
-from autodiff.autodiff.diff import value_and_grad, value, grad
-import autodiff.autodiff.numpy_grad.wrapper as np
+import autodiff as ad
+from autodiff import value_and_grad, value, grad
+
 
 class Optimizer:
     def __init__(self, lr, parameter):
@@ -12,9 +12,11 @@ class Optimizer:
     def step(self):
         pass
 
+
 class GradientDescent(Optimizer):
     def __init__(self, lr, parameter):
         super().__init__(lr, parameter)
-    
+
     def step(self, grad_value, loss_grad):
-        self.parameter -= self.lr * _np.dot(grad_value, loss_grad)  #x.T * (y_hat - y)
+        self.parameter -= self.lr * _np.dot(grad_value,
+                                            loss_grad)  #x.T * (y_hat - y)

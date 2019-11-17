@@ -19,8 +19,10 @@ nograd_functions = [
 ]
 
 excluded_function = [
-    _np.linspace, _np.arange,
+    _np.linspace,
+    _np.arange,
 ]
+
 
 def wrap_func(numpy, local):
     function_types = {_np.ufunc, types.FunctionType, types.BuiltinFunctionType}
@@ -31,6 +33,7 @@ def wrap_func(numpy, local):
             local[name] = primitive(obj)
         elif isinstance(obj, type) and _np.issubdtype(obj, _np.integer):
             local[name] = obj
+
 
 wrap_func(_np.__dict__, globals())
 globals()['Constant'] = constant(_np.array)

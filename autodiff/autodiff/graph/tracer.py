@@ -14,7 +14,9 @@ def constant(array):
             info.stack.append(node_index)
         # print('const', node_index, const, args)
         return array(*args, **kwargs)
+
     return const_wrapped
+
 
 def variable(array):
     def var_wrapped(**kwargs):
@@ -29,7 +31,9 @@ def variable(array):
             info.stack.append(node_index)
         # print('var', node_index, kwargs)
         return array(*kwargs.values())
+
     return var_wrapped
+
 
 def placeholder(array):
     def place_wrapped(**kwargs):
@@ -44,7 +48,9 @@ def placeholder(array):
             info.stack.append(node_index)
         # print('var', node_index, kwargs)
         return array(*kwargs.values())
+
     return place_wrapped
+
 
 def primitive(func):
     @wraps(func)
@@ -63,4 +69,5 @@ def primitive(func):
 
             info.stack.append(node_index)
         return result
+
     return func_wrapped

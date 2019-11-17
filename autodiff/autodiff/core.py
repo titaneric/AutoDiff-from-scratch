@@ -11,8 +11,10 @@ graph_stack = []
 GraphInfo = namedtuple('GraphInfo', 'stack, vars, places')
 graph_info_dict = defaultdict(GraphInfo)
 
+
 def is_wrt(node):
     return type(node) in [VariableNode, PlaceholderNode]
+
 
 def forward_prop(func, **assignd):
     def forward_wrap(*args, **kwargs):
@@ -21,6 +23,7 @@ def forward_prop(func, **assignd):
         return func(*args, **assignd)
 
     return forward_wrap
+
 
 def backward_prop(graph: nx.DiGraph):
     graph.nodes[len(graph.nodes())]['node'].gradient = onp.array(1)
@@ -40,7 +43,7 @@ def backward_prop(graph: nx.DiGraph):
                 # print("\t:", "" if not is_wrt(tmp) else tmp.var, downstream)
         elif is_wrt(child_node):
             gradient_dict[child_node.var] = child_node.gradient
-    
+
     return graph, gradient_dict
 
 

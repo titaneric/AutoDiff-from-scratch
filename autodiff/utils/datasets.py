@@ -1,15 +1,17 @@
 import random
 
+
 class Dataset:
     def __init__(self, X, Y):
         self.X = X
         self.Y = Y
-    
+
     def __len__(self):
         return len(self.X)
-    
+
     def __getitem__(self, idx):
         return self.X[idx], self.Y[idx]
+
 
 class DataLoader:
     def __init__(self, dataset: Dataset):
