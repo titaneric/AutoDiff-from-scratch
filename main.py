@@ -53,14 +53,15 @@ def train_model():
     opt = GradientDescent(lr, W)
     loss_func = MSE()
     epoch = 100
-    for _ in range(epoch):
+    for i in range(epoch):
         x, y = dataloader.next_batch(50)
         predicted_y, grad_value = value_and_grad(model, 'W')(W=W,
                                                              feed_dict={
                                                                  'x': x
                                                              })
-        _, loss_grad = loss_func.calc_loss(y, predicted_y)
+        v, loss_grad = loss_func.calc_loss(y, predicted_y)
         opt.step(grad_value, loss_grad)
+        print(i, v)
 
     print(W)
     print(theta)
