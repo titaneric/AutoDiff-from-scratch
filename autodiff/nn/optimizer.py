@@ -5,18 +5,20 @@ from autodiff import value_and_grad, value, grad
 
 
 class Optimizer:
-    def __init__(self, lr, parameter):
+    def __init__(self, lr, parameters):
         self.lr = lr
-        self.parameter = parameter
+        self.parameters = parameters
 
     def step(self):
         pass
 
 
 class GradientDescent(Optimizer):
-    def __init__(self, lr, parameter):
+    def __init__(self, lr, parameter, variables):
         super().__init__(lr, parameter)
+        self.variables = variables
 
-    def step(self, grad_value, loss_grad):
-        self.parameter -= self.lr * _np.dot(grad_value,
-                                            loss_grad)  #x.T * (y_hat - y)
+    def step(self, model_grad):
+        for i, var in zip(reversed(range(len(self.parameters))),
+                          reversed(self.variables)):
+            self.parameters[i] -= self.lr * model_grad[var]

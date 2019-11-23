@@ -2,7 +2,6 @@ class Node:
     def __init__(self):
         self.gradient = 0
 
-
 class OperationNode(Node):
     def __init__(self, func, args, kwargs, result):
         super().__init__()

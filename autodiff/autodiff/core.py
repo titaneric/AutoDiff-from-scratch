@@ -7,10 +7,14 @@ from .graph.node import OperationNode, VariableNode, PlaceholderNode
 
 primitive_vhp = defaultdict(dict)
 
-graph_stack = []
+class var:
+    pass
+
+global_vars = var()
+global_vars._default_graph = None
+
 GraphInfo = namedtuple('GraphInfo', 'stack, vars, places')
 graph_info_dict = defaultdict(GraphInfo)
-
 
 def is_wrt(node):
     return type(node) in [VariableNode, PlaceholderNode]
@@ -18,15 +22,16 @@ def is_wrt(node):
 
 def forward_prop(func, **assignd):
     def forward_wrap(*args, **kwargs):
-        graph = nx.DiGraph()
-        graph_stack.append(graph)
+        global global_vars
+        global_vars._default_graph = nx.DiGraph()
         return func(*args, **assignd)
 
     return forward_wrap
 
 
-def backward_prop(graph: nx.DiGraph):
-    graph.nodes[len(graph.nodes())]['node'].gradient = onp.array(1)
+def backward_prop(upstream):
+    graph = global_vars._default_graph
+    graph.nodes[len(graph.nodes())]['node'].gradient = upstream
 
     gradient_dict = {}
     for node in reversed(list(nx.topological_sort(graph))):
@@ -39,12 +44,14 @@ def backward_prop(graph: nx.DiGraph):
                 vhp = primitive_vhp[func.__name__][i]
                 downstream = vhp(upstream, result, *args)
                 graph.nodes[parent]['node'].gradient += downstream
-                # tmp = graph.nodes[parent]['node']
-                # print("\t:", "" if not is_wrt(tmp) else tmp.var, downstream)
+                # print("downstream size is", graph.nodes[parent]['node'].gradient.shape)
+
+
         elif is_wrt(child_node):
             gradient_dict[child_node.var] = child_node.gradient
 
-    return graph, gradient_dict
+
+    return gradient_dict
 
 
 def register_vjp(func, vhp_list):

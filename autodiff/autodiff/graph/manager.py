@@ -1,6 +1,6 @@
 import networkx as nx
 
-from ..core import graph_stack, graph_info_dict, GraphInfo
+from ..core import global_vars, graph_info_dict, GraphInfo
 
 
 class GraphManager:
@@ -8,14 +8,14 @@ class GraphManager:
         pass
 
     def __enter__(self):
-        self.graph: nx.DiGraph = graph_stack.pop()
+        self.graph: nx.DiGraph = global_vars._default_graph
         self.graph_info = graph_info_dict.get(self.graph,
                                               GraphInfo([], dict(), dict()))
         return self.graph, self.graph_info
 
     def __exit__(self, *args):
-        graph_stack.append(self.graph)
-        graph_info_dict[self.graph] = self.graph_info
+        _default_graph = self.graph
+        graph_info_dict[_default_graph] = self.graph_info
 
 
 def add_node(graph, node):

@@ -147,41 +147,31 @@ def balanced_eq(x, z, y):
 
 
 def dot_vjp_first(upstream, result, x, y):
-    if max(wnp.ndim(x), wnp.ndim(y)) > 2:
-        raise NotImplementedError("Not support dimension currently!")
+    # print("first: ", upstream, result.shape, x.shape, y.shape)
 
-    if wnp.ndim(x) == 0:
-        return wnp.sum(upstream * y)
+    if not (onp.ndim(x) == onp.ndim(y) == 2):
+        raise NotImplementedError("Only care about MM or MV product!")
 
-    if wnp.ndim(x) == 1 and wnp.ndim(y) == 1:
-        return upstream * y
+    # Take the derivative of output respect to x (input)
+    downstream = onp.dot(upstream, y.T)
+    
+    assert downstream.shape == x.shape
 
-    if wnp.ndim(x) == 2 and wnp.ndim(y) == 1:
-        return upstream[:, None] * y if wnp.ndim(
-            upstream) == 1 else upstream * y
-    if wnp.ndim(x) == 1 and wnp.ndim(y) == 2:
-        return onp.dot(y, upstream)
-
-    return onp.dot(upstream, y.T)
+    return downstream
 
 
 def dot_vjp_second(upstream, result, x, y):
-    if max(wnp.ndim(x), wnp.ndim(y)) > 2:
-        raise NotImplementedError("Not support dimension currently!")
+    # print("second: ", upstream, result.shape, x.shape, y.shape)
 
-    if wnp.ndim(x) == 0:
-        return wnp.sum(upstream * x)
+    if not (onp.ndim(x) == onp.ndim(y) == 2):
+        raise NotImplementedError("Only care about MM or MV product!")
 
-    if wnp.ndim(x) == 1 and wnp.ndim(y) == 1:
-        return upstream * x
+    # Take the derivative of output respect to y (weight)
+    downstream = onp.dot(x.T, upstream)
 
-    if wnp.ndim(x) == 2 and wnp.ndim(y) == 1:
-        return onp.dot(upstream, y)
+    assert downstream.shape == y.shape
 
-    if wnp.ndim(x) == 1 and wnp.ndim(y) == 2:
-        return x[:, None] * upstream
-
-    return onp.dot(x.T, upstream)
+    return downstream
 
 
 register_vjp(

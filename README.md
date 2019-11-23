@@ -24,8 +24,6 @@ If time allowed, provide a simple multi-layer perceptron (neural network) interf
 
 ## TODO
 
-- linear regression with more than one variable
-- neural network
 - classifier
 - benchmark
 - unit test
