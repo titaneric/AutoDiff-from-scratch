@@ -41,7 +41,7 @@ loss_list = []
 for i in range(epoch):
     x, y = dataloader.next_batch(batch_size)
     predicted_y = value(model)(W1=W1, W2=W2, feed_dict={'x': x})
-    v, loss_grad = loss_func.calc_loss(y, predicted_y)
+    v, loss_grad = loss_func(y, predicted_y)
     model_grad = grad(model, upstream=loss_grad)(W1=W1, W2=W2, feed_dict={'x': x})
     opt.step(model_grad)
     loss_list.append(v)

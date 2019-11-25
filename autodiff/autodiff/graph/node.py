@@ -5,7 +5,7 @@ class Node:
 class OperationNode(Node):
     def __init__(self, func, args, kwargs, result):
         super().__init__()
-        self.recipe = (func, args, kwargs, result, len(args))
+        self.recipe = (func, args, kwargs, result, len(args) if func.__name__ != "reshape" else 1)
 
 
 class VariableNode(Node):

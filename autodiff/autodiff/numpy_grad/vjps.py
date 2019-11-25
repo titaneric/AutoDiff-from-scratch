@@ -124,6 +124,7 @@ def unbroadcast(target, g, broadcast_idx=0, other=None):
     # print(other)
     # print(target)
     # print("Before", g)
+    # print(g, target)
     while onp.ndim(g) > onp.ndim(target):
         g = onp.sum(g, axis=broadcast_idx)
         # print("Sum", g)
@@ -200,7 +201,7 @@ def sum_vjp(upstream, result, x, axis=1, keepdims=False, dtype=None):
     new_shape = onp.array(shape)
     new_shape[axis] = 1
     # print(onp.reshape(upstream, new_shape))
-    return onp.reshape(upstream, new_shape) + onp.zeros(shape, dtype=dtype)
+    return wnp.reshape(upstream, new_shape) + onp.zeros(shape, dtype=dtype)
 
 
 register_vjp(wnp.sum, [sum_vjp])

@@ -39,12 +39,13 @@ def backward_prop(upstream):
         if isinstance(child_node, OperationNode):
             func, args, kwargs, result, arg_num = child_node.recipe
             upstream = child_node.gradient
-            # print(func.__name__, upstream)
+            # print(func.__name__, upstream, args, arg_num)
+            
             for i, parent in zip(range(arg_num), graph.predecessors(node)):
                 vhp = primitive_vhp[func.__name__][i]
-                downstream = vhp(upstream, result, *args)
+                downstream = vhp(upstream, result, *args, **kwargs)
+                # print(i, "downstream size is", downstream.shape)
                 graph.nodes[parent]['node'].gradient += downstream
-                # print("downstream size is", graph.nodes[parent]['node'].gradient.shape)
 
 
         elif is_wrt(child_node):

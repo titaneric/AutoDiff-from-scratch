@@ -24,10 +24,8 @@ If time allowed, provide a simple multi-layer perceptron (neural network) interf
 
 ## TODO
 
-- classifier
 - benchmark
 - unit test
-- cross entropy criterion
 - documents
 
 ## Reference
