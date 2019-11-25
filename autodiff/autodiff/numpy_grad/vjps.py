@@ -154,7 +154,7 @@ def dot_vjp_first(upstream, result, x, y):
 
     # Take the derivative of output respect to x (input)
     downstream = onp.dot(upstream, y.T)
-    
+
     assert downstream.shape == x.shape
 
     return downstream
@@ -180,3 +180,27 @@ register_vjp(
         dot_vjp_first,  # w.r.t. x
         dot_vjp_second,  # w.r.t. y
     ])
+
+# Special operator
+
+register_vjp(wnp.reshape, [
+    lambda upstream, result, x, shape, order=None: wnp.reshape(
+        upstream, wnp.shape(x), order=order)
+])
+
+
+def sum_vjp(upstream, result, x, axis=1, keepdims=False, dtype=None):
+    shape = onp.shape(x)
+
+    if not shape:
+        return upstream
+
+    # print(result, x, axis)
+    axis = list(axis) if isinstance(axis, tuple) else axis
+    new_shape = onp.array(shape)
+    new_shape[axis] = 1
+    # print(onp.reshape(upstream, new_shape))
+    return onp.reshape(upstream, new_shape) + onp.zeros(shape, dtype=dtype)
+
+
+register_vjp(wnp.sum, [sum_vjp])
