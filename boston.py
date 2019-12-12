@@ -45,7 +45,7 @@ lr = 1e-8
 opt = GradientDescent(lr, model.parameters())
 loss_func = MSE()
 epoch = 200
-batch_size = 2
+batch_size = 16
 loss_list = []
 for i in range(epoch):
     x, y = dataloader.next_batch(batch_size)
