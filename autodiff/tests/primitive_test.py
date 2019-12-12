@@ -9,8 +9,8 @@ from autodiff import value_and_grad, value, grad
 
 def binary_func_helper(func):
     def true_binary_func(*args, **kwargs):
-        v1 = ad.Variable(v1=kwargs["v1"])
-        v2 = ad.Variable(v2=kwargs["v2"])
+        v1 = ad.Variable(kwargs["v1"])
+        v2 = ad.Variable(kwargs["v2"])
         return ad.__dict__[func](v1, v2)
 
     return true_binary_func
@@ -23,8 +23,8 @@ class TestVHPMethods(unittest.TestCase):
         v, g = value_and_grad(binary_func_helper("add"))(v1=v1, v2=v2)
 
         self.assertEqual(v, v1 + v2)
-        self.assertEqual(g['v1'], 1)
-        self.assertEqual(g['v2'], 1)
+        self.assertEqual(g[id(v1)], 1)
+        self.assertEqual(g[id(v2)], 1)
 
 
 if __name__ == "__main__":

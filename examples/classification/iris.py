@@ -12,6 +12,7 @@ from autodiff import value_and_grad, value, grad
 from autodiff.utils.datasets import Dataset, DataLoader
 from autodiff.nn.optimizer import GradientDescent
 from autodiff.nn.criterion import CrossEntropy
+from classifier import grad_cross_entropy, cross_entropy
 
 warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -38,9 +39,9 @@ def model(W, feed_dict={}):
 X, Y = load_iris(return_X_y=True)
 num_classes = 3
 
-enc = OneHotEncoder(categories="auto")
+# enc = OneHotEncoder(categories="auto")
 Y = Y.reshape(-1, 1)
-Y = enc.fit_transform(Y).toarray()
+# Y = enc.fit_transform(Y).toarray()
 
 data_size, num_features = X.shape
 
@@ -54,10 +55,10 @@ parameters = [W]
 dataset = Dataset(X, Y)
 dataloader = DataLoader(dataset)
 
-lr = 1e-3
+lr = 1e-5
 opt = GradientDescent(lr, parameters, ["W"])
 loss_func = CrossEntropy()
-epoch = 100
+epoch = 300
 batch_size = 20
 loss_list = []
 for i in range(epoch):
@@ -65,7 +66,9 @@ for i in range(epoch):
     # print(x, y)
     predicted_y = value(model)(W=W, feed_dict={'x': x})
     # print(y, predicted_y)
-    v, loss_grad = loss_func(y, predicted_y)
+    # v, loss_grad = loss_func(y, predicted_y)
+    v = cross_entropy(predicted_y, y)
+    loss_grad = grad_cross_entropy(predicted_y, y)
     # print(loss_grad)
     model_grad = grad(model, upstream=loss_grad)(W=W,
                                                  feed_dict={
@@ -73,6 +76,7 @@ for i in range(epoch):
                                                  })
     opt.step(model_grad)
     loss_list.append(v)
+    # break
 
 plt.plot(range(epoch), loss_list)
 plt.savefig('Iris.png')
