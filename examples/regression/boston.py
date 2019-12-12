@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cbook
 
 import autodiff as ad
-from autodiff import value_and_grad, value, grad
 from autodiff.utils.datasets import Dataset, DataLoader
 from autodiff.nn.optimizer import GradientDescent
 from autodiff.nn.criterion import MSE
@@ -15,10 +14,6 @@ from autodiff.nn.layer import Module, Linear
 
 warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
-
-# def model(W1, W2, feed_dict={}):
-#     output1 = ad.dot(ad.Placeholder(x=feed_dict['x']), ad.Variable(W1=W1))
-#     return ad.dot(output1, ad.Variable(W2=W2))
 
 
 class SimpleModel(Module):

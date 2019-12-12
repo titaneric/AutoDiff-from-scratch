@@ -61,7 +61,7 @@ def backward_prop(upstream):
 
     return gradient_dict
 
-
+# TODO restructure this part
 def zero_grad(graph):
     for node_index in graph.nodes:
         graph.nodes[node_index]['node'].gradient = 0

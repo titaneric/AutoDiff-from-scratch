@@ -27,9 +27,8 @@ class MSE(Criterion):
         super().__init__()
 
     def loss_func(self, feed_dict={}):
-        diff = ad.subtract(
-            ad.Placeholder(feed_dict['predicted_y']),
-            ad.Placeholder(feed_dict['true_y']))
+        diff = ad.subtract(ad.Placeholder(feed_dict['predicted_y']),
+                           ad.Placeholder(feed_dict['true_y']))
         return ad.multiply(ad.power(diff, ad.Constant(2)), ad.Constant(1 / 2))
 
 
@@ -38,10 +37,14 @@ class CrossEntropy(Criterion):
         super().__init__()
 
     def loss_func(self, feed_dict={}):
-        prediction_place = ad.Placeholder(feed_dict["predicted_y"])
-        targets_place = ad.Placeholder(feed_dict["true_y"])
-
-        return ad.reshape(
+        batch_size = feed_dict["predicted_y"].shape[0]
+        return ad.add(
             ad.negative(
-                ad.sum(ad.multiply(targets_place, ad.log(prediction_place)),
-                       axis=1)), (-1, 1))
+                ad.getitem(
+                    ad.Placeholder(feed_dict["predicted_y"]),
+                    ad.Constant(
+                        tuple([range(batch_size),
+                               feed_dict["true_y"].ravel()])))),
+            ad.log(
+                ad.sum(ad.exp(ad.Placeholder(feed_dict["predicted_y"])),
+                       axis=1)))

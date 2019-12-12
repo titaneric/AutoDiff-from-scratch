@@ -35,13 +35,13 @@ register_vjp(
 register_vjp(
     wnp.sin,
     [
-        lambda upstream, result, x: upstream * wnp.cos(x),  # w.r.t. x
+        lambda upstream, result, x: upstream * onp.cos(x),  # w.r.t. x
     ])
 
 register_vjp(
     wnp.cos,
     [
-        lambda upstream, result, x: upstream * -wnp.sin(x),  # w.r.t. x
+        lambda upstream, result, x: upstream * -onp.sin(x),  # w.r.t. x
     ])
 """
     Binary operation
@@ -185,8 +185,8 @@ register_vjp(
 # Special operator
 
 register_vjp(wnp.reshape, [
-    lambda upstream, result, x, shape, order=None: wnp.reshape(
-        upstream, wnp.shape(x), order=order)
+    lambda upstream, result, x, shape, order=None: onp.reshape(
+        upstream, onp.shape(x), order=order)
 ])
 
 
@@ -201,7 +201,16 @@ def sum_vjp(upstream, result, x, axis=1, keepdims=False, dtype=None):
     new_shape = onp.array(shape)
     new_shape[axis] = 1
     # print(onp.reshape(upstream, new_shape))
-    return wnp.reshape(upstream, new_shape) + onp.zeros(shape, dtype=dtype)
+    return onp.reshape(upstream, new_shape) + onp.zeros(shape, dtype=dtype)
 
 
 register_vjp(wnp.sum, [sum_vjp])
+
+
+def getitem_vjp(upstream, result, x, index):
+    # print(x, index, upstream)
+    onp.add.at(x, index, upstream)
+    return x
+
+register_vjp(wnp.getitem, [getitem_vjp])
+

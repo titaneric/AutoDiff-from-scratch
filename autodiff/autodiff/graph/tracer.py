@@ -14,7 +14,7 @@ def constant(array):
                 node_index = add_node(graph, node)
                 info.stack.append(node_index)
         # print('const', node_index, content)
-        return array(content)
+        return content if isinstance(content, tuple) else array(content)
 
     return const_wrapped
 

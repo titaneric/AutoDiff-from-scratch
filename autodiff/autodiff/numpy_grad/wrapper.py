@@ -25,14 +25,20 @@ excluded_function = [
 
 
 def wrap_func(numpy, local):
+    # Wrap numpy primitive function
     function_types = {_np.ufunc, types.FunctionType, types.BuiltinFunctionType}
-    for name, obj in numpy.items():
-        if obj in nograd_functions or obj in excluded_function:
-            local[name] = obj
-        elif type(obj) in function_types:
-            local[name] = primitive(obj)
-        elif isinstance(obj, type) and _np.issubdtype(obj, _np.integer):
-            local[name] = obj
+    for name, func in numpy.items():
+        if func in nograd_functions or func in excluded_function:
+            local[name] = func
+        elif type(func) in function_types:
+            local[name] = primitive(func)
+        elif isinstance(func, type) and _np.issubdtype(func, _np.integer):
+            local[name] = func
+    
+    # Wrap numpy array member function
+    for func in [_np.ndarray.__getitem__, _np.ndarray.__len__, _np.ndarray.__contains__]:
+        func_name = func.__name__[2:-2]
+        local[func_name] = primitive(func)
 
 
 wrap_func(_np.__dict__, globals())
