@@ -14,11 +14,9 @@ class Optimizer:
 
 
 class GradientDescent(Optimizer):
-    def __init__(self, lr, parameter, variables):
+    def __init__(self, lr, parameter):
         super().__init__(lr, parameter)
-        self.variables = variables
 
     def step(self, model_grad):
-        for i, var in zip(reversed(range(len(self.parameters))),
-                          reversed(self.variables)):
-            self.parameters[i] -= self.lr * model_grad[var]
+        for i, para_info in reversed(list(enumerate(self.parameters))):
+            self.parameters[i]["variables"] -= self.lr * model_grad[para_info["array_id"]]
