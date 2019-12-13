@@ -212,5 +212,5 @@ def getitem_vjp(upstream, result, x, index):
     onp.add.at(x, index, upstream)
     return x
 
-register_vjp(wnp.getitem, [getitem_vjp])
+register_vjp(wnp.__getitem__, [getitem_vjp])
 

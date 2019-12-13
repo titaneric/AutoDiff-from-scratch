@@ -40,7 +40,7 @@ class CrossEntropy(Criterion):
         batch_size = feed_dict["predicted_y"].shape[0]
         return ad.add(
             ad.negative(
-                ad.getitem(
+                ad.__getitem__(
                     ad.Placeholder(feed_dict["predicted_y"]),
                     ad.Constant(
                         tuple([range(batch_size),

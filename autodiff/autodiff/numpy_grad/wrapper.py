@@ -37,8 +37,7 @@ def wrap_func(numpy, local):
     
     # Wrap numpy array member function
     for func in [_np.ndarray.__getitem__, _np.ndarray.__len__, _np.ndarray.__contains__]:
-        func_name = func.__name__[2:-2]
-        local[func_name] = primitive(func)
+        local[func.__name__] = primitive(func)
 
 
 wrap_func(_np.__dict__, globals())
