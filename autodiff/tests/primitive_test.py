@@ -5,7 +5,7 @@ import numpy as np
 
 import autodiff as ad
 from autodiff.autodiff.core import primitive_vhp
-from autodiff import value_and_grad, value, grad
+from autodiff.utils.test_utils import check_value, check_vjp, func_helper
 
 numpy_function = {
     func_name: np.__dict__[func_name]
@@ -14,28 +14,19 @@ numpy_function = {
 }
 
 
-def func_helper(func):
-    def wrapped(*args, **kwargs):
-        arg_list = (ad.Variable(arg) for arg in args)
-        return ad.__dict__[func](*arg_list)
-
-    return wrapped
-
-
-class TestVHPMethods(unittest.TestCase):
+class TestJVPMethods(unittest.TestCase):
     def test_add(self):
         v1, v2 = 1, 2
         args = (v1, v2)
+        check_vjp(numpy_function["add"], func_helper("add"), args)
 
-        v, g = value_and_grad(func_helper("add"))(*args)
 
-        self.assertEqual(v, numpy_function["add"](*args))
-        self.assertEqual(g[id(v1)], 1)
-        self.assertEqual(g[id(v2)], 1)
+class TestNumpyMethods(unittest.TestCase):
+    def test_add(self):
+        v1, v2 = 1, 2
+        args = (v1, v2)
+        check_value(numpy_function["add"], func_helper("add"), args)
 
 
 if __name__ == "__main__":
-
-    print(numpy_function)
-
     unittest.main()
