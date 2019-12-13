@@ -12,11 +12,11 @@ def is_wrt(node):
     return type(node) in [VariableNode, PlaceholderNode]
 
 
-def forward_prop(func, provided_graph=None, **assignd):
+def forward_prop(func, provided_graph=None):
     def forward_wrap(*args, **kwargs):
         graph = nx.DiGraph() if provided_graph is None else provided_graph
         register_graph(graph)
-        return func(*args, **assignd)
+        return func(*args, **kwargs)
 
     return forward_wrap
 
