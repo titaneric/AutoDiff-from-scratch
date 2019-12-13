@@ -6,7 +6,7 @@ import matplotlib.cbook
 import numpy as _np
 
 import autodiff as ad
-from autodiff.utils.datasets import Dataset, DataLoader
+from autodiff.utils.model_utils import Dataset, DataLoader, train_procedure
 from autodiff.nn.optimizer import GradientDescent
 from autodiff.nn.criterion import MSE
 from autodiff.nn.layer import Module, Linear
@@ -43,14 +43,13 @@ lr = 0.001
 opt = GradientDescent(lr, model.parameters())
 loss_func = MSE()
 epoch = 300
-for i in range(epoch):
+for i in train_procedure(epoch):
     x, y = dataloader.next_batch(10)
     predicted_y = model(x)
     v, loss_grad = loss_func(y, predicted_y)
     model_grad = model.backward(loss_grad)
     opt.step(model_grad)
     model.zero_grad()
-    print(i, v)
 
 predict = model(aug_X)
 

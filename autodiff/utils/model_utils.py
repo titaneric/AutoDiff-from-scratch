@@ -1,5 +1,6 @@
 import random
 
+from tqdm import trange
 
 class Dataset:
     def __init__(self, X, Y):
@@ -21,3 +22,8 @@ class DataLoader:
         candidate = list(range(len(self.dataset)))
         sample_index = random.sample(candidate, num)
         return self.dataset[sample_index]
+
+
+def train_procedure(epoch):
+    for i in trange(epoch):
+        yield i

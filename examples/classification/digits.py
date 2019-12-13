@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cbook
 
 import autodiff as ad
-from autodiff.utils.datasets import Dataset, DataLoader
+from autodiff.utils.model_utils import Dataset, DataLoader, train_procedure
 from autodiff.nn.optimizer import GradientDescent
 from autodiff.nn.criterion import CrossEntropy
 from autodiff.nn.layer import Module, Linear
@@ -43,7 +43,7 @@ loss_func = CrossEntropy()
 epoch = 300
 batch_size = 32
 loss_list = []
-for i in range(epoch):
+for _ in train_procedure(epoch):
     x, y = dataloader.next_batch(batch_size)
     predicted_y = model(x)
     v, loss_grad = loss_func(y, predicted_y)
@@ -51,7 +51,6 @@ for i in range(epoch):
     opt.step(model_grad)
     model.zero_grad()
     loss_list.append(v)
-    print(i, v)
 
 plt.plot(range(epoch), loss_list)
 plt.savefig('Digits.png')
