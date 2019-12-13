@@ -1,6 +1,6 @@
 import numpy as onp
 
-from .core import forward_prop, backward_prop, global_vars
+from .core import forward_prop, backward_prop
 
 
 def value(func):

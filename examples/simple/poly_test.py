@@ -4,7 +4,6 @@ import warnings
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.cbook
-import numpy as _np
 
 import autodiff as ad
 from autodiff import value_and_grad, value, grad

@@ -1,9 +1,7 @@
 #pylint: disable=no-member
 import warnings
 
-import numpy as _np
 from sklearn.datasets import load_iris
-from sklearn.preprocessing import OneHotEncoder
 import matplotlib.pyplot as plt
 import matplotlib.cbook
 

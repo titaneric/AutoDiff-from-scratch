@@ -1,7 +1,6 @@
 #pylint: disable=no-member
 import warnings
 
-import numpy as _np
 from sklearn.datasets import load_boston
 import matplotlib.pyplot as plt
 import matplotlib.cbook

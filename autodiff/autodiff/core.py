@@ -1,28 +1,11 @@
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 
 import networkx as nx
-import numpy as onp
 
 from .graph.node import OperationNode, VariableNode, PlaceholderNode
+from .global_vars import register_graph, pop_graph
 
 primitive_vhp = defaultdict(dict)
-
-
-class GraphInfo:
-    def __init__(self):
-        self.stack = []
-        self.vars = dict()
-        self.places = dict()
-        self.forwarded = False
-
-
-class var:
-    pass
-
-
-global_vars = var()
-global_vars._graph_stack = []
-global_vars._graph_info_dict = defaultdict(GraphInfo)
 
 
 def is_wrt(node):
@@ -31,7 +14,6 @@ def is_wrt(node):
 
 def forward_prop(func, **assignd):
     def forward_wrap(*args, **kwargs):
-        global global_vars
         register_graph(nx.DiGraph())
         return func(*args, **assignd)
 
@@ -61,6 +43,7 @@ def backward_prop(upstream):
 
     return gradient_dict
 
+
 # TODO restructure this part
 def zero_grad(graph):
     for node_index in graph.nodes:
@@ -70,24 +53,3 @@ def zero_grad(graph):
 def register_vjp(func, vhp_list):
     for i, downstream in enumerate(vhp_list):
         primitive_vhp[func.__name__][i] = downstream
-
-
-def register_graph(graph):
-    global_vars._graph_stack.append(graph)
-
-
-def pop_graph():
-    return global_vars._graph_stack.pop()
-
-
-def set_forwarded(graph):
-    global_vars._graph_info_dict[graph].forwarded = True
-
-
-def set_parameters(parameters, graph):
-    for array_id, node_index in global_vars._graph_info_dict[graph].vars.items(
-    ):
-        parameters.append({
-            "array_id": array_id,
-            "variables": graph.nodes[node_index]['node'].content
-        })
