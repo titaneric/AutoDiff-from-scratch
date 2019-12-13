@@ -11,9 +11,7 @@ class Module:
         self._parameters = []
 
     def __call__(self, *args):
-        #pylint: disable=assignment-from-none
-        ad.register_graph(self._graph)
-        result = self.forward(*args)
+        result = ad.forward_prop(self.forward, provided_graph=self._graph)(*args)
         # only set parameters at the first forward pass
         if not self._parameters:
             ad.set_parameters(self._parameters, self._graph)

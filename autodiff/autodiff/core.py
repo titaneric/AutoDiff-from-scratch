@@ -12,9 +12,10 @@ def is_wrt(node):
     return type(node) in [VariableNode, PlaceholderNode]
 
 
-def forward_prop(func, **assignd):
+def forward_prop(func, provided_graph=None, **assignd):
     def forward_wrap(*args, **kwargs):
-        register_graph(nx.DiGraph())
+        graph = nx.DiGraph() if provided_graph is None else provided_graph
+        register_graph(graph)
         return func(*args, **assignd)
 
     return forward_wrap
@@ -44,7 +45,6 @@ def backward_prop(upstream):
     return gradient_dict
 
 
-# TODO restructure this part
 def zero_grad(graph):
     for node_index in graph.nodes:
         graph.nodes[node_index]['node'].gradient = 0
