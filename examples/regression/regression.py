@@ -15,9 +15,6 @@ warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-# def model(W, feed_dict={}):
-#     return ad.dot(ad.Placeholder(x=feed_dict['x']), ad.Variable(W=W))
-
 class SimpleModel(Module):
     def __init__(self, num_features):
         super().__init__()

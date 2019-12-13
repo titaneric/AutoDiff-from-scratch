@@ -40,9 +40,7 @@ def test4(x):
 
 def power_demo():
     x_list = ad.linspace(-7, 7, 200)
-    # x_list = 5
     y_list, dy_list = value_and_grad(test3, id(x_list))(x=x_list)
-    # print(y_list, dy_list)
 
     plt.plot(x_list, y_list, x_list, dy_list)
     # plt.axis('off')
