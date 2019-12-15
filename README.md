@@ -1,34 +1,103 @@
 # Basic neural network library supported auto-differentiation
 
-## Motivation
+## Introduction
 
-Most deep learning courses aim to teach math behind the network, architecture and their applications.
+This is the very simple neural network library that supporting auto-differtiation. After referenced works from priors (see *Reference*), I provide the implementation which is simple enough that can tackle the real-world problem (regression and classification).
 
-However, seldom course talk about how to implement and design the deep learning library and start everything from scratch.
+## Documents
 
-Wish to implement this kind of library and learn how and why the priors (TensorFlow and PyTorch etc.) design their work during the development of final project.
+### Forward-prop and backward-prop
 
-## Target
+Source:
 
-Based on [Autograd](https://github.com/HIPS/autograd) project, build a similar library that user simply define the function, and this lib can automatically calculate this differentiation form of given function.
+- `autodiff/autodiff/core.py`
+- `autodiff/autodiff/diff.py`
 
-Build the computational graph when function is called, calculate the backward propogation with respect to variable or placeholder (in tensorflow term).
+We init the graph in the forward prop and call the wrapped operation (See *Wrapped operation and VJP*). I am too lazy to use the DiGraph in networkx as the computational graph but only use litte features (build graph and topological sort).
 
-Provide a benchmark compared to TensorFlow and PyTorch.
+Note that unlike `autograd` and `jax`, I can only calculate the first order derivative of the given function.
 
-If time allowed, provide a simple multi-layer perceptron (neural network) interface, criterion, optimizer, datasets and dataloader like the priors.
+### Wrapped operation and VJP
 
-## Project Link
+Source:
 
-[AutoDiff-from-scratch](https://github.com/titaneric/AutoDiff-from-scratch)
+- `autodiff/autodiff/numpy_grad/wrapper.py`
+- `autodiff/autodiff/numpy_grad/vjps.py`
 
-## TODO
+In the forward-prop, we construct the computational graph (See *Computational graph*) with the wrapped numpy function in the wrapper module.
 
-- benchmark
-- unit test
-- documents
+In the backward-prop, we need to reference the VJP form of the given operation, we register the VJPs in the very begining. I only support little function but it's enough to do the more higher implementation (See *High level usage*).
+
+### Computational graph
+
+Source: 
+
+- `autodiff/autodiff/graph/tracer.py` (wrapped operation and graph building)
+- `autodiff/autodiff/graph/node.py` (nodes classes)
+- `autodiff/autodiff/graph/manager.py` (Context manager for graph)
+
+Notice that we don't have to worry about the how the node has been built (order of execution), because the python interpreter know it, for example
+
+```python
+ad.add(ad.Variable(x), ad.Variable(y)
+```
+
+The interpreter know that we need to construct the Variable of x and then Variable of y first, after that we do the operation of add.
+
+By fully leverage this feature, we can push variable nodes into stack and pop them from stack in the primitive operation and connect them with an edge.
+
+Note that in the current implementation, I use `id(x)` to identify different nodes in the graph (which is bad but simple). Due to small integer may have the same address which can cause program no longer work as expected, there are lots of TODO in the future.
+
+### High level usage
+
+Source:
+
+- `autodiff/nn/layer.py` (Module and Layer classes)
+- `autodiff/nn/criterion.py` (Criterion for different problems)
+- `autodiff/nn/optimizer.py` (Optimizers)
+
+In the high-level implementation, Fully imitate the syntax from pytorch but it only support the multi-layer perceptron with little weird syntax in the current time, as shown below.
+
+```python
+class SimpleModel(Module):
+    def __init__(self, num_features, num_classes):
+        super().__init__()
+        self.linear1 = Linear(num_features, 5)
+        self.linear2 = Linear(5, num_classes)
+
+    def forward(self, x):
+        x = self.linear1(x, bridge=False)
+        x = self.linear2(x)
+        return x
+```
+
+This model want to solve the classification problem with two layers, notice that in the `forward` method, first layer MUST assign bridge to `False` to generate a new `Placeholder` for x.
+
+### Example
+
+Source:
+
+- `examples\*`
+
+We cover the real-world problem including regression and classification. I use MSE criterior for regression and cross-entropy loss for classification.
+
+### Test
+
+Source:
+
+- `autodiff\tests\*`
+
+So far, we cover the test for get value from function and it's derivatives.
 
 ## Reference
+
+### Implementation
+
+- Core idea from [Autograd](https://github.com/HIPS/autograd)
+- Test procedure and test cases from [JAX](https://github.com/google/jax)
+- Variable, Placeholder and Constant syntax from [TensorFlow](https://github.com/tensorflow/tensorflow)
+- Layer syntax and cross entropy from [PyTorch](https://github.com/pytorch/pytorch)
+
 
 ### Source code
 
@@ -38,6 +107,7 @@ If time allowed, provide a simple multi-layer perceptron (neural network) interf
 - [TensorFlow](https://github.com/tensorflow/tensorflow)
 - [Caffe](https://github.com/BVLC/caffe)
 - [Caffe2](https://github.com/pytorch/pytorch/tree/master/caffe2)
+- [JAX](https://github.com/google/jax)
 
 ### Lecture
 
