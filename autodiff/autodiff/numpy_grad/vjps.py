@@ -3,6 +3,7 @@ import numpy as onp
 
 from ..numpy_grad import wrapper as wnp
 from ..core import register_vjp
+import autodiff.autodiff.numpy_grad._vjp as _vjp
 
 # print(__name__)
 """
@@ -11,37 +12,48 @@ from ..core import register_vjp
 register_vjp(
     wnp.negative,
     [
-        lambda upstream, result, x: -upstream,  # w.r.t. x
+        lambda upstream, result, x: _vjp.negative_vjp(upstream, result, x)
+        # lambda upstream, result, x: -upstream,  # w.r.t. x
     ])
 
 register_vjp(
     wnp.reciprocal,
     [
-        lambda upstream, result, x: upstream * (-1 / x**2),  # w.r.t. x
+        lambda upstream, result, x: _vjp.reciprocal_vjp(upstream, result, x
+                                                        ),  # w.r.t. x
+        # lambda upstream, result, x: upstream * (-1 / x**2),  # w.r.t. x
     ])
 
 register_vjp(
     wnp.exp,
     [
-        lambda upstream, result, x: upstream * result,  # w.r.t. x
+        lambda upstream, result, x: _vjp.exp_vjp(upstream, result, x
+                                                 ),  # w.r.t. x
+        # lambda upstream, result, x: upstream * result,  # w.r.t. x
     ])
 
 register_vjp(
     wnp.log,
     [
-        lambda upstream, result, x: upstream / x,  # w.r.t. x
+        lambda upstream, result, x: _vjp.log_vjp(upstream, result, x
+                                                 ),  # w.r.t. x
+        # lambda upstream, result, x: upstream / x,  # w.r.t. x
     ])
 
 register_vjp(
     wnp.sin,
     [
-        lambda upstream, result, x: upstream * onp.cos(x),  # w.r.t. x
+        lambda upstream, result, x: _vjp.sin_vjp(upstream, result, x
+                                                 ),  # w.r.t. x
+        # lambda upstream, result, x: upstream * onp.cos(x),  # w.r.t. x
     ])
 
 register_vjp(
     wnp.cos,
     [
-        lambda upstream, result, x: upstream * -onp.sin(x),  # w.r.t. x
+        lambda upstream, result, x: _vjp.cos_vjp(upstream, result, x
+                                                 ),  # w.r.t. x
+        # lambda upstream, result, x: upstream * -onp.sin(x),  # w.r.t. x
     ])
 """
     Binary operation
@@ -212,5 +224,5 @@ def getitem_vjp(upstream, result, x, index):
     onp.add.at(x, index, upstream)
     return x
 
-register_vjp(wnp.__getitem__, [getitem_vjp])
 
+register_vjp(wnp.__getitem__, [getitem_vjp])
