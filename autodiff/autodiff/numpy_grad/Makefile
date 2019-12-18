@@ -1,5 +1,3 @@
-include Makefile.variable
-
 FLAGS ?=
 
 UNAME_S := $(shell uname -s)

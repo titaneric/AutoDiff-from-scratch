@@ -3,7 +3,7 @@ import numpy as onp
 
 from ..numpy_grad import wrapper as wnp
 from ..core import register_vjp
-import autodiff.autodiff.numpy_grad._vjp as _vjp
+from . import _vjp
 
 # print(__name__)
 """
